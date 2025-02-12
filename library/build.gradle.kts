@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -6,9 +5,11 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.vanniktech.mavenPublish)
+    alias(libs.plugins.compose.compiler)
+    `maven-publish`
 }
 
-group = "io.github.kotlin"
+group = "io.github.ismoy.BelZSpeedScan"
 version = "1.0.0"
 
 kotlin {
@@ -17,18 +18,23 @@ kotlin {
         publishLibraryVariants("release")
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
+            jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-    linuxX64()
-
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    targetHierarchy.default()
     sourceSets {
         val commonMain by getting {
             dependencies {
-                //put your multiplatform dependencies here
+                api(libs.compose.runtime)
+                implementation(libs.compose.ui)
+                implementation(libs.compose.animation)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material)
             }
         }
         val commonTest by getting {
@@ -36,18 +42,54 @@ kotlin {
                 implementation(libs.kotlin.test)
             }
         }
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.androidx.activity.compose)
+                implementation (libs.androidx.camera.core)
+                implementation (libs.androidx.camera.camera2)
+                implementation (libs.androidx.camera.lifecycle)
+                implementation (libs.androidx.camera.view)
+                implementation (libs.accompanist.permissions)
+                implementation(libs.zxing.android.embedded)
+                implementation(libs.core)
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.androidx.ui)
+                implementation(libs.androidx.ui.tooling.preview)
+                implementation (libs.barcode.scanning)
+            }
+        }
+        iosMain{
+            resources.srcDirs("src/iosMain/resources")
+            tasks.withType<ProcessResources> {
+                duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            }
+        }
     }
 }
 
 android {
-    namespace = "org.jetbrains.kotlinx.multiplatform.library.template"
+    namespace = "io.github.ismoy.BelZSpeedScan"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+    buildTypes{
+        release {  }
+        debug {  }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
+publishing{
+    repositories {
+        mavenLocal()
+    }
+}
 
-mavenPublishing {
+
+/*mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
     signAllPublications()
@@ -79,4 +121,4 @@ mavenPublishing {
             developerConnection = "ZZZ"
         }
     }
-}
+}*/
