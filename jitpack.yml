@@ -1,0 +1,5 @@
+jdk:
+  version: 17
+build:
+  android:
+    module: library
