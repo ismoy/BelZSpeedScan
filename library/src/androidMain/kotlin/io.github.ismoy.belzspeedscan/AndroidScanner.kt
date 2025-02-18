@@ -15,6 +15,10 @@ import androidx.lifecycle.LifecycleOwner
 import android.media.AudioAttributes
 import android.media.SoundPool
 import androidx.camera.core.AspectRatio
+import io.github.ismoy.belzspeedscan.data.model.CameraPositionDistance
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class AndroidScanner(
     private val context: Context,
@@ -34,6 +38,8 @@ class AndroidScanner(
 
     private var soundPool: SoundPool? = null
     private var scanBeepSound: Int = 0
+    private val _scanDistance = MutableStateFlow(CameraPositionDistance.TOO_FAR)
+    val scanDistance: StateFlow<CameraPositionDistance> = _scanDistance.asStateFlow()
 
     init {
         if (playSound) {
@@ -95,7 +101,10 @@ class AndroidScanner(
                                     playBeepSound()
                                     onCodeScanned(code)
                                 },
-                                isQRScanning = isQRScanning
+                                isQRScanning = isQRScanning,
+                                onDistanceChanged = {distance->
+                                    _scanDistance.value = distance
+                                }
                             )
                         )
                         isAnalyzerBound = true

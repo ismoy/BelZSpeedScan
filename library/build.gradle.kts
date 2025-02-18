@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.ismoy.BelZSpeedScan"
-version = "1.0.0"
+version = "1.0.1"
 
 kotlin {
     jvm()
@@ -58,8 +58,9 @@ kotlin {
                 implementation (libs.barcode.scanning)
             }
         }
+        val iosResourcesDir = project.findProperty("iosResourcesDir") as? String ?: "src/iosMain/resources"
         iosMain{
-            resources.srcDirs("src/iosMain/resources")
+            resources.srcDirs(iosResourcesDir)
             tasks.withType<ProcessResources> {
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
             }
@@ -87,38 +88,3 @@ publishing{
         mavenLocal()
     }
 }
-
-
-/*mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-
-    signAllPublications()
-
-    coordinates(group.toString(), "library", version.toString())
-
-    pom {
-        name = "My library"
-        description = "A library."
-        inceptionYear = "2024"
-        url = "https://github.com/kotlin/multiplatform-library-template/"
-        licenses {
-            license {
-                name = "XXX"
-                url = "YYY"
-                distribution = "ZZZ"
-            }
-        }
-        developers {
-            developer {
-                id = "XXX"
-                name = "YYY"
-                url = "ZZZ"
-            }
-        }
-        scm {
-            url = "XXX"
-            connection = "YYY"
-            developerConnection = "ZZZ"
-        }
-    }
-}*/

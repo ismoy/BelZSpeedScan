@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -21,27 +22,56 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.ismoy.belzspeedscan.data.model.CameraPositionDistance
 
 @Composable
-fun ActiveScanningOverlay(watermark: String = "BelZSpeedScan") {
-    val transition = rememberInfiniteTransition(label = "")
-    val offsetFloat by transition.animateFloat(
-        initialValue = 60F,
-        targetValue = 0F,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 900, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = ""
-    )
-    val offset = offsetFloat.dp
+fun ActiveScanningOverlay(
+    watermark: String,
+    scanDistance: CameraPositionDistance = CameraPositionDistance.TOO_FAR,
+    tooFarColor: Color = Color.Red,
+    tooCloseColor: Color ,
+    tooOptimalColor: Color,
+    tooFarText:String,
+    tooCloseText:String,
+    tooOptimalText:String
+
+) {
+
+    val (frameColor, instructionText) = when (scanDistance) {
+        CameraPositionDistance.TOO_FAR -> Pair(
+            tooFarColor,
+            tooFarText
+        )
+        CameraPositionDistance.TOO_CLOSE -> Pair(
+            tooCloseColor,
+            tooCloseText
+        )
+        CameraPositionDistance.OPTIMAL -> Pair(
+            tooOptimalColor,
+            tooOptimalText
+        )
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Barra central fija
+        val transition = rememberInfiniteTransition(label = "")
+        val offsetFloat by transition.animateFloat(
+            initialValue = 60F,
+            targetValue = 0F,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 900, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = ""
+        )
+        val offset = offsetFloat.dp
+
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -53,41 +83,120 @@ fun ActiveScanningOverlay(watermark: String = "BelZSpeedScan") {
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .width(40.dp)
                     .fillMaxHeight()
                     .background(Color.White)
+                    .padding(horizontal = 16.dp)
             )
         }
 
-        // Barra superior
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = -offset)
-                .width(100.dp)
+                .fillMaxWidth(0.5f)
                 .height(4.dp)
                 .background(Color.Gray)
         )
 
-        // Barra inferior
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = offset)
-                .width(100.dp)
+                .fillMaxWidth(0.5f)
                 .height(4.dp)
                 .background(Color.Gray)
         )
-        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             text = watermark,
             color = Color.White,
             fontSize = 20.sp,
             fontFamily = FontFamily.Cursive,
             modifier = Modifier
-                .padding(end = 30.dp)
                 .align(Alignment.CenterEnd)
+                .padding(end = 30.dp)
                 .offset(y = 25.dp)
+        )
+
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val scanningAreaWidth = size.width * 0.8f
+            val scanningAreaHeight = scanningAreaWidth * 0.6f
+            val left = (size.width - scanningAreaWidth) / 2f
+            val top = (size.height - scanningAreaHeight) / 2f
+            val right = left + scanningAreaWidth
+            val bottom = top + scanningAreaHeight
+
+            val cornerLength = scanningAreaWidth * 0.15f
+            val strokeWidth = 8f
+
+            drawLine(
+                color = frameColor,
+                start = Offset(left, top + cornerLength),
+                end = Offset(left, top),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round
+            )
+            drawLine(
+                color = frameColor,
+                start = Offset(left, top),
+                end = Offset(left + cornerLength, top),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round
+            )
+
+            drawLine(
+                color = frameColor,
+                start = Offset(right - cornerLength, top),
+                end = Offset(right, top),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round
+            )
+            drawLine(
+                color = frameColor,
+                start = Offset(right, top),
+                end = Offset(right, top + cornerLength),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round
+            )
+
+            drawLine(
+                color = frameColor,
+                start = Offset(left, bottom - cornerLength),
+                end = Offset(left, bottom),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round
+            )
+            drawLine(
+                color = frameColor,
+                start = Offset(left, bottom),
+                end = Offset(left + cornerLength, bottom),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round
+            )
+
+            drawLine(
+                color = frameColor,
+                start = Offset(right - cornerLength, bottom),
+                end = Offset(right, bottom),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round
+            )
+            drawLine(
+                color = frameColor,
+                start = Offset(right, bottom - cornerLength),
+                end = Offset(right, bottom),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round
+            )
+        }
+        Text(
+            text = instructionText,
+            fontSize = 16.sp,
+            color = frameColor,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
         )
     }
 }

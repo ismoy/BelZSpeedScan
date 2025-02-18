@@ -2,6 +2,7 @@ package io.github.ismoy.belzspeedscan
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import io.github.ismoy.belzspeedscan.data.model.CameraPositionDistance
 import io.github.ismoy.belzspeedscan.domain.CodeScanner
 import io.github.ismoy.belzspeedscan.utils.ActiveScanningOverlay
 import io.github.ismoy.belzspeedscan.utils.InactiveScanningOverlay
@@ -26,13 +28,21 @@ import kotlinx.coroutines.delay
 actual fun CameraPreview(
     onPreviewViewReady: (Any) -> Unit,
     scanner: CodeScanner?,
-    modifier: Modifier
+    modifier: Modifier,
+    waterMark: String?,
+    tooFarColor: androidx.compose.ui.graphics.Color?,
+    tooCloseColor: androidx.compose.ui.graphics.Color?,
+    tooOptimalColor: androidx.compose.ui.graphics.Color?,
+    tooFarText: String?,
+    tooCloseText: String?,
+    tooOptimalText: String?
 ) {
     var isCameraInactive by remember { mutableStateOf(false) }
     var lastActivityTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var lastScanTime by remember { mutableLongStateOf(0L) }
     var isScanning by remember { mutableStateOf(false) }
     var hasUserInteraction by remember { mutableStateOf(false) }
+    var scanDistance by remember { mutableStateOf(CameraPositionDistance.TOO_FAR) }
 
     fun updateActivity() {
         lastActivityTime = System.currentTimeMillis()
@@ -52,6 +62,9 @@ actual fun CameraPreview(
                 hasUserInteraction = true
                 updateActivity()
                 originalCallback(code)
+            }
+            androidScanner.scanDistance.collect { distance ->
+                scanDistance = distance
             }
         }
     }
@@ -98,7 +111,16 @@ actual fun CameraPreview(
         )
 
         if (!isCameraInactive) {
-            ActiveScanningOverlay()
+            ActiveScanningOverlay(
+                watermark = waterMark!!,
+                scanDistance = scanDistance,
+                tooFarColor = tooFarColor!!,
+                tooCloseColor = tooCloseColor!!,
+                tooOptimalColor = tooOptimalColor!!,
+                tooFarText = tooFarText!!,
+                tooCloseText = tooCloseText!!,
+                tooOptimalText = tooOptimalText!!
+            )
         }
 
         if (isCameraInactive) {
