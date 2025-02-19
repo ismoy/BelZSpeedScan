@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.ismoy"
-version = "1.0.1.1"
+version = "1.0.1.3"
 
 kotlin {
     androidTarget()
@@ -69,19 +69,18 @@ kotlin {
         }
     }
     publishing {
-        publications.configureEach {
-            val targetPublication = this
-            tasks.withType<AbstractPublishToMaven>()
-                .matching { it.publication == targetPublication }
-                .configureEach { onlyIf { publication == publications["kmm"] } }
-        }
-
         publications {
             create<MavenPublication>("kmm") {
                 from(components["kotlin"])
                 groupId = "com.github.ismoy"
                 artifactId = "BelZSpeedScan"
-                version = "1.0.1.1"
+                version = "1.0.1.3"
+
+                // Esto es importante para evitar artefactos adicionales
+                pom {
+                    name.set("BelZSpeedScan")
+                    description.set("Kotlin Multiplatform Library")
+                }
             }
         }
     }
@@ -105,5 +104,5 @@ android {
 
 }
 tasks.withType<AbstractPublishToMaven>().configureEach {
-    onlyIf { publication.name == "kmm" }
+    enabled = publication?.name == "kmm"
 }
