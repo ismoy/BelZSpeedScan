@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.github.ismoy"
-version = "1.0.0.6"
+version = "1.0.0.8"
 
 kotlin {
     jvm("desktop")
@@ -22,11 +22,19 @@ kotlin {
         }
     }
 
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    targetHierarchy.default()
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { target ->
+        target.binaries.framework {
+            baseName = "BelZSpeedScan"
+            isStatic = true
+            linkerOpts += "-Xbundle-id=com.github.ismoy.BelZSpeedScan"
+            freeCompilerArgs += "-Xbundle-id=com.github.ismoy.BelZSpeedScan"
+        }
+    }
+    applyDefaultHierarchyTemplate()
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -69,13 +77,22 @@ kotlin {
 
         }
     }
-    publishing {
-        publications {
-            register<MavenPublication>("multiplatform") {
-                groupId = "com.github.ismoy"
-                artifactId = "BelZSpeedScan"
-                version = "1.0.0.6"
-                from(components["kotlin"])
+}
+publishing {
+    publications {
+        register<MavenPublication>("lib") {
+            groupId = "com.github.ismoy"
+            artifactId = "BelZSpeedScan"
+            version = "1.0.0.8"
+            from(components["kotlin"])
+
+            // Esto evita la creación de artefactos separados
+            suppressAllPomMetadataWarnings()
+
+            // Configuración de pom para unificar las dependencias
+            pom {
+                name.set("BelZSpeedScan")
+                description.set("Multiplatform library for Android, iOS and Desktop")
             }
         }
     }
