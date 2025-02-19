@@ -5,4 +5,4 @@ before_install:
   - sdk use java 17.0.12-oracle
 install:
   - ./gradlew clean
-  - ./gradlew :library:publishKmmPublicationToMavenLocal -x publishIosArm64PublicationToMavenLocal -x publishIosX64PublicationToMavenLocal -x publishIosSimulatorArm64PublicationToMavenLocal -x publishDesktopPublicationToMavenLocal
+  - ./gradlew :library:publishKmmPublicationToMavenLocal
