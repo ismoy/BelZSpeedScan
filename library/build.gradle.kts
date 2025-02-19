@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -9,7 +6,7 @@ plugins {
 }
 
 group = "com.github.ismoy"
-version = "1.0.0.8"
+version = "1.0.0.9"
 
 kotlin {
     jvm("desktop")
@@ -77,22 +74,25 @@ kotlin {
 
         }
     }
-}
-publishing {
-    publications {
-        register<MavenPublication>("lib") {
-            groupId = "com.github.ismoy"
-            artifactId = "BelZSpeedScan"
-            version = "1.0.0.8"
-            from(components["kotlin"])
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["kotlin"])
 
-            // Esto evita la creación de artefactos separados
-            suppressAllPomMetadataWarnings()
+                groupId = "com.github.ismoy"
+                artifactId = "BelZSpeedScan"
+                version = "1.0.0.9"
 
-            // Configuración de pom para unificar las dependencias
-            pom {
-                name.set("BelZSpeedScan")
-                description.set("Multiplatform library for Android, iOS and Desktop")
+                pom {
+                    name.set("BelZSpeedScan")
+                    description.set("Multiplatform library for Android, iOS and Desktop")
+                }
+            }
+
+            // Configuración común para todas las publicaciones
+            withType<MavenPublication>().configureEach {
+                groupId = "com.github.ismoy"
+                version = "1.0.0.9"
             }
         }
     }
@@ -102,9 +102,9 @@ publishing {
 android {
     namespace = "com.github.ismoy.BelZSpeedScan"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-    buildTypes{
-        release {  }
-        debug {  }
+    buildTypes {
+        release { }
+        debug { }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -115,4 +115,3 @@ android {
     }
 
 }
-
