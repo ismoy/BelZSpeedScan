@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.ismoy"
-version = "1.0.1.2"
+version = "1.0.1.1"
 
 kotlin {
     androidTarget()
@@ -81,7 +81,7 @@ kotlin {
                 from(components["kotlin"])
                 groupId = "com.github.ismoy"
                 artifactId = "BelZSpeedScan"
-                version = "1.0.1.2"
+                version = "1.0.1.1"
             }
         }
     }
