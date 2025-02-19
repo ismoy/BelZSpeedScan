@@ -4,21 +4,21 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    //alias(libs.plugins.vanniktech.mavenPublish)
     alias(libs.plugins.compose.compiler)
-    //`maven-publish`
+    `maven-publish`
 }
 
-/*group = "io.github.ismoy.BelZSpeedScan"
-version = "1.0.1"*/
+group = "com.github.ismoy"
+version = "1.0.0.6"
 
 kotlin {
     jvm("desktop")
     androidTarget {
-        publishLibraryVariants("release")
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+        publishLibraryVariants("release", "debug")
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
         }
     }
 
@@ -69,10 +69,21 @@ kotlin {
 
         }
     }
+    publishing {
+        publications {
+            register<MavenPublication>("multiplatform") {
+                groupId = "com.github.ismoy"
+                artifactId = "BelZSpeedScan"
+                version = "1.0.0.6"
+                from(components["kotlin"])
+            }
+        }
+    }
 }
 
+
 android {
-    namespace = "io.github.ismoy.BelZSpeedScan"
+    namespace = "com.github.ismoy.BelZSpeedScan"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     buildTypes{
         release {  }
@@ -85,9 +96,6 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+
 }
-/*publishing{
-    repositories {
-        mavenLocal()
-    }
-}*/
+

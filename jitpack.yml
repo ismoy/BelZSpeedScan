@@ -1,5 +1,7 @@
 jdk:
   - openjdk17
-build:
-  android:
-    module: library
+before_install:
+  - sdk install java 17.0.12-oracle
+  - sdk use java 17.0.12-oracle
+install:
+  - ./gradlew publishToMavenLocal -xtest
