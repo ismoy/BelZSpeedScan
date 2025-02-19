@@ -1,4 +1,5 @@
-jdk: "17"
+jdk:
+  - openjdk17
 build:
   android:
-    module: "library"
+    module: library
