@@ -6,13 +6,11 @@ plugins {
 }
 
 group = "com.github.ismoy"
-version = "1.0.1.0"
+version = "1.0.1.2"
 
 kotlin {
+    androidTarget()
     jvm("desktop")
-    androidTarget {
-        publishAllLibraryVariants()
-    }
 
     listOf(
         iosX64(),
@@ -23,10 +21,11 @@ kotlin {
             baseName = "BelZSpeedScan"
             isStatic = true
             linkerOpts += "-Xbundle-id=com.github.ismoy.BelZSpeedScan"
-            freeCompilerArgs += "-Xbundle-id=com.github.ismoy.BelZSpeedScan"
         }
     }
+
     applyDefaultHierarchyTemplate()
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -70,38 +69,19 @@ kotlin {
         }
     }
     publishing {
-        // Deshabilitar publicaciones automáticas
-        publications.withType<MavenPublication> {
-            suppressAllPomMetadataWarnings()
+        publications.configureEach {
+            val targetPublication = this
+            tasks.withType<AbstractPublishToMaven>()
+                .matching { it.publication == targetPublication }
+                .configureEach { onlyIf { publication == publications["kmm"] } }
         }
 
-        // Solo crear una publicación KMP
         publications {
-            register<MavenPublication>("kmm") {
+            create<MavenPublication>("kmm") {
                 from(components["kotlin"])
                 groupId = "com.github.ismoy"
                 artifactId = "BelZSpeedScan"
-                version = "1.0.1.0"
-
-                // Configuración para evitar metadatos de plataforma específica
-                pom {
-                    name.set("BelZSpeedScan")
-                    description.set("Kotlin Multiplatform Library")
-
-                    // Esto es importante para evitar las dependencias de plataforma específica
-                    withXml {
-                        asNode().apply {
-                            val deps = this.get("dependencies") as groovy.util.NodeList
-                            deps.forEach { dep ->
-                                val dependency = dep as groovy.util.Node
-                                val artifactId = dependency.get("artifactId")?.toString() ?: ""
-                                if (artifactId.contains("-ios") || artifactId.contains("-desktop")) {
-                                    dependency.parent().remove(dependency)
-                                }
-                            }
-                        }
-                    }
-                }
+                version = "1.0.1.2"
             }
         }
     }
@@ -123,4 +103,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
+}
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    onlyIf { publication.name == "kmm" }
 }

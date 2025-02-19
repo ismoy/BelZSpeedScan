@@ -4,4 +4,5 @@ before_install:
   - sdk install java 17.0.12-oracle
   - sdk use java 17.0.12-oracle
 install:
-  - ./gradlew publishToMavenLocal -Pkotlin.native.ignoreDisabledTargets=true -xtest
+  - ./gradlew clean
+  - ./gradlew :library:publishKmmPublicationToMavenLocal -x publishIosArm64PublicationToMavenLocal -x publishIosX64PublicationToMavenLocal -x publishIosSimulatorArm64PublicationToMavenLocal -x publishDesktopPublicationToMavenLocal
