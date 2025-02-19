@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.ismoy"
-version = "1.0.1.3"
+version = "1.0.1.4"
 
 kotlin {
     androidTarget()
@@ -73,13 +73,21 @@ kotlin {
             create<MavenPublication>("kmm") {
                 from(components["kotlin"])
                 groupId = "com.github.ismoy"
-                artifactId = "BelZSpeedScan"
-                version = "1.0.1.3"
+                // Importante: cambia el artifactId para evitar conflictos
+                artifactId = "library"
+                version = "1.0.1.4"
 
-                // Esto es importante para evitar artefactos adicionales
                 pom {
                     name.set("BelZSpeedScan")
                     description.set("Kotlin Multiplatform Library")
+                    // Esto es importante para evitar dependencias de plataforma
+                    withXml {
+                        asNode().children().forEach { node ->
+                            if ((node as groovy.util.Node).name().toString() == "dependencies") {
+                                node.parent().remove(node)
+                            }
+                        }
+                    }
                 }
             }
         }
