@@ -4,16 +4,16 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.vanniktech.mavenPublish)
+    //alias(libs.plugins.vanniktech.mavenPublish)
     alias(libs.plugins.compose.compiler)
-    `maven-publish`
+    //`maven-publish`
 }
 
-group = "io.github.ismoy.BelZSpeedScan"
-version = "1.0.1"
+/*group = "io.github.ismoy.BelZSpeedScan"
+version = "1.0.1"*/
 
 kotlin {
-    jvm()
+    jvm("desktop")
     androidTarget {
         publishLibraryVariants("release")
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -65,6 +65,9 @@ kotlin {
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
             }
         }
+        val desktopMain by getting {
+
+        }
     }
 }
 
@@ -83,8 +86,8 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
-publishing{
+/*publishing{
     repositories {
         mavenLocal()
     }
-}
+}*/
