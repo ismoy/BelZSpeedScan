@@ -6,17 +6,12 @@ plugins {
 }
 
 group = "com.github.ismoy"
-version = "1.0.0.9"
+version = "1.0.1.0"
 
 kotlin {
     jvm("desktop")
     androidTarget {
-        publishLibraryVariants("release", "debug")
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
-        }
+        publishAllLibraryVariants()
     }
 
     listOf(
@@ -75,24 +70,38 @@ kotlin {
         }
     }
     publishing {
-        publications {
-            create<MavenPublication>("release") {
-                from(components["kotlin"])
+        // Deshabilitar publicaciones automáticas
+        publications.withType<MavenPublication> {
+            suppressAllPomMetadataWarnings()
+        }
 
+        // Solo crear una publicación KMP
+        publications {
+            register<MavenPublication>("kmm") {
+                from(components["kotlin"])
                 groupId = "com.github.ismoy"
                 artifactId = "BelZSpeedScan"
-                version = "1.0.0.9"
+                version = "1.0.1.0"
 
+                // Configuración para evitar metadatos de plataforma específica
                 pom {
                     name.set("BelZSpeedScan")
-                    description.set("Multiplatform library for Android, iOS and Desktop")
-                }
-            }
+                    description.set("Kotlin Multiplatform Library")
 
-            // Configuración común para todas las publicaciones
-            withType<MavenPublication>().configureEach {
-                groupId = "com.github.ismoy"
-                version = "1.0.0.9"
+                    // Esto es importante para evitar las dependencias de plataforma específica
+                    withXml {
+                        asNode().apply {
+                            val deps = this.get("dependencies") as groovy.util.NodeList
+                            deps.forEach { dep ->
+                                val dependency = dep as groovy.util.Node
+                                val artifactId = dependency.get("artifactId")?.toString() ?: ""
+                                if (artifactId.contains("-ios") || artifactId.contains("-desktop")) {
+                                    dependency.parent().remove(dependency)
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
