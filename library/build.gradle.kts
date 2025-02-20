@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.ismoy"
-version = "1.0.1.6"
+version = "1.0.1.8"
 
 kotlin {
     androidTarget()
@@ -44,21 +44,22 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.androidx.activity.compose)
-                implementation (libs.androidx.camera.core)
-                implementation (libs.androidx.camera.camera2)
-                implementation (libs.androidx.camera.lifecycle)
-                implementation (libs.androidx.camera.view)
-                implementation (libs.accompanist.permissions)
+                implementation(libs.androidx.camera.core)
+                implementation(libs.androidx.camera.camera2)
+                implementation(libs.androidx.camera.lifecycle)
+                implementation(libs.androidx.camera.view)
+                implementation(libs.accompanist.permissions)
                 implementation(libs.zxing.android.embedded)
                 implementation(libs.core)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.androidx.ui)
                 implementation(libs.androidx.ui.tooling.preview)
-                implementation (libs.barcode.scanning)
+                implementation(libs.barcode.scanning)
             }
         }
-        val iosResourcesDir = project.findProperty("iosResourcesDir") as? String ?: "src/iosMain/resources"
-        iosMain{
+        val iosResourcesDir =
+            project.findProperty("iosResourcesDir") as? String ?: "src/iosMain/resources"
+        iosMain {
             resources.srcDirs(iosResourcesDir)
             tasks.withType<ProcessResources> {
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -70,20 +71,14 @@ kotlin {
     }
     publishing {
         publications {
-            create<MavenPublication>("kmm") {
+            create<MavenPublication>("release") {
                 from(components["kotlin"])
                 groupId = "com.github.ismoy"
                 artifactId = "BelZSpeedScan"
-                version = "1.0.1.6"
-
-                // Asegurar que se incluyan los sources
-                artifact(tasks.named("sourcesJar"))
+                version = "1.0.1.8"
             }
         }
     }
-}
-tasks.withType<AbstractPublishToMaven>().configureEach {
-    enabled = publication?.name == "kmm"
 }
 
 
@@ -102,4 +97,19 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
+}
+publishing {
+    publications.withType<MavenPublication>().configureEach {
+        if (name != "release") {
+            tasks.withType<AbstractPublishToMaven>()
+                .matching { it.publication.name == name }
+                .configureEach { enabled = false }
+        }
+    }
+}
+
+tasks.withType<org.gradle.jvm.tasks.Jar> {
+    if (name.contains("sources", ignoreCase = true)) {
+        enabled = name == "sourcesJar"
+    }
 }
