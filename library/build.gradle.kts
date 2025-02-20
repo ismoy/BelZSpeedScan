@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.ismoy"
-version = "1.0.1.5"
+version = "1.0.1.6"
 
 kotlin {
     androidTarget()
@@ -69,46 +69,21 @@ kotlin {
         }
     }
     publishing {
-        publications.all {
-            val targetPublication = this@all
-            tasks.withType<AbstractPublishToMaven>()
-                .matching { it.publication == targetPublication }
-                .configureEach { enabled = false }
-        }
-
         publications {
             create<MavenPublication>("kmm") {
                 from(components["kotlin"])
                 groupId = "com.github.ismoy"
                 artifactId = "BelZSpeedScan"
-                version = "1.0.1.5"
+                version = "1.0.1.6"
 
-                pom {
-                    name.set("BelZSpeedScan")
-                    description.set("Kotlin Multiplatform Library")
-                    withXml {
-                        asNode().children().forEach { node ->
-                            when ((node as groovy.util.Node).name().toString()) {
-                                "dependencies" -> {
-                                    val dependencies = node
-                                    val iterator = dependencies.children().iterator()
-                                    while (iterator.hasNext()) {
-                                        val dependency = iterator.next() as groovy.util.Node
-                                        val artifactId = dependency.get("artifactId")?.toString() ?: ""
-                                        if (artifactId.contains("-desktop") ||
-                                            artifactId.contains("-ios") ||
-                                            artifactId.contains("-android")) {
-                                            iterator.remove()
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                // Asegurar que se incluyan los sources
+                artifact(tasks.named("sourcesJar"))
             }
         }
     }
+}
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    enabled = publication?.name == "kmm"
 }
 
 
