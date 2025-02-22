@@ -1,20 +1,21 @@
 pluginManagement {
     repositories {
-       // mavenLocal()
         google()
         mavenCentral()
         gradlePluginPortal()
-       // maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        mavenLocal()
+
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        //mavenLocal()
         google()
         mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
     }
 }
 
 rootProject.name = "BelZSpeedScan"
-include(":library")
+include(":belzspeedscan")
