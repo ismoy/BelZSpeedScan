@@ -12,8 +12,9 @@ actual fun createBelSpeedScanCodeScanner(
     playSound: Boolean,
     resourceName:String,
     resourceExtension:String,
+    delayToNextScan:Long,
+    areaRatioThreshold:Float,
     onCodeScanned: (String) -> Unit,
-    delayToNextScan:Long
 ): CodeScanner {
-    return IOSScanner(previewView as UIView, isQRScanning,playSound,resourceName,resourceExtension,onCodeScanned,delayToNextScan)
+    return IOSScanner(previewView as UIView, isQRScanning,playSound,resourceName,resourceExtension,delayToNextScan,onCodeScanned)
 }

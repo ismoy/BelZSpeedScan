@@ -13,9 +13,10 @@ actual fun createBelSpeedScanCodeScanner(
     playSound: Boolean,
     resourceName:String,
     resourceExtension:String,
+    delayToNextScan:Long,
+    areaRatioThreshold:Float,
     onCodeScanned: (String) -> Unit,
-    delayToNextScan:Long
 ): CodeScanner {
     return AndroidScanner(context as Context, lifecycleOwner as LifecycleOwner,
-        previewView as PreviewView,isQRScanning,onCodeScanned,playSound,delayToNextScan)
+        previewView as PreviewView,isQRScanning,onCodeScanned,playSound,delayToNextScan,areaRatioThreshold)
 }

@@ -10,10 +10,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id("com.vanniktech.maven.publish") version "0.30.0"
     id("maven-publish")
-    //`maven-publish`
 }
-/*group = "io.github.ismoy"
-version = "1.0.3"*/
 
 
 kotlin {
@@ -37,9 +34,7 @@ kotlin {
             baseName = "belzspeedscan"
             isStatic = true
         }
-        target.mavenPublication {
-            // Configuración específica si es necesario
-        }
+        target.mavenPublication {}
     }
     withSourcesJar(true)
     sourceSets {
@@ -108,16 +103,11 @@ android {
     }
 
 }
-/*publishing{
-    repositories{
-        mavenLocal()
-    }
-}*/
 mavenPublishing{
     coordinates(
         groupId = "io.github.ismoy",
         artifactId = "belzspeedscan",
-        version = "1.0.8"
+        version = "1.0.7-alpha07"
     )
     pom {
         name.set("BelZSpeedScan")
@@ -153,12 +143,9 @@ afterEvaluate {
         publications.forEach { publication ->
             val mavenPublication = publication as? MavenPublication
             if (mavenPublication != null) {
-                // Solo modifica kotlinMultiplatform para tener el artifactId base
                 if (mavenPublication.name == "kotlinMultiplatform") {
                     mavenPublication.artifactId = "belzspeedscan"
                 } else {
-                    // Mantén los sufijos específicos para cada plataforma
-                    // Estos serán como 'belzspeedscan-iosarm64', 'belzspeedscan-android', etc.
                     println("Leaving platform-specific artifactId: ${mavenPublication.artifactId}")
                 }
 

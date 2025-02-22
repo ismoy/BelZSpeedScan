@@ -75,8 +75,8 @@ class IOSScanner(
     private val playSound: Boolean,
     private val resourceName:String,
     private val resourceExtension:String,
+    private val delayToNextScan: Long,
     var onCodeScanned: (String) -> Unit,
-    private val delayToNextScan: Long
 ) : CodeScanner {
 
     private var captureSession: AVCaptureSession? = null

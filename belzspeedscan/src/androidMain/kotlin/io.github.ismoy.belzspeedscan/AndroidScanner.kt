@@ -1,9 +1,13 @@
 package io.github.ismoy.belzspeedscan
 
 import android.content.Context
+import android.graphics.ImageFormat
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.util.Log
+import android.util.Size
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -17,6 +21,7 @@ import io.github.ismoy.belzspeedscan.domain.CodeScanner
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.math.abs
 
 class AndroidScanner(
     private val context: Context,
@@ -25,7 +30,8 @@ class AndroidScanner(
     private val isQRScanning: Boolean,
     var onCodeScanned: (String) -> Unit,
     private val playSound: Boolean,
-    private val delayToNextScan:Long
+    private val delayToNextScan:Long,
+    private val areaRatioThreshold:Float
 ) : CodeScanner {
 
     private var cameraProvider: ProcessCameraProvider? = null
@@ -104,7 +110,8 @@ class AndroidScanner(
                                 onDistanceChanged = {distance->
                                     _scanDistance.value = distance
                                 },
-                                delayToNextScan = delayToNextScan
+                                delayToNextScan = delayToNextScan,
+                                areaRatioThreshold = areaRatioThreshold
                             )
                         )
                         isAnalyzerBound = true

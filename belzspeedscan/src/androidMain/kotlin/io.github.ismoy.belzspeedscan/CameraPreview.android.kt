@@ -25,7 +25,7 @@ import kotlinx.coroutines.delay
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
-public actual fun CameraPreview(
+actual fun CameraPreview(
     onPreviewViewReady: (Any) -> Unit,
     scanner: CodeScanner?,
     modifier: Modifier,
