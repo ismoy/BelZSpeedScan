@@ -10,6 +10,8 @@ expect fun createBelSpeedScanCodeScanner(
     playSound: Boolean,
     resourceName:String,
     resourceExtension:String,
+    delayToNextScan:Long = 2000,
+    areaRatioThreshold:Float = 0.008f,
     onCodeScanned: (String) -> Unit,
-    delayToNextScan:Long = 2000L
+
 ): CodeScanner

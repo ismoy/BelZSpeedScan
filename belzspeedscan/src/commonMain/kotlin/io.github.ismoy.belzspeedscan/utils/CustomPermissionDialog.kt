@@ -57,7 +57,7 @@ fun CustomPermissionDialog(
                     text = title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Blue,
+                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
 
@@ -67,7 +67,7 @@ fun CustomPermissionDialog(
                     text = description,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.Black,
+                    color = Color.LightGray,
                     textAlign = TextAlign.Center
                 )
 
