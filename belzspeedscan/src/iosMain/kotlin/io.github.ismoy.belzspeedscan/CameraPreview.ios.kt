@@ -37,10 +37,7 @@ public actual fun CameraPreview(
     tooOptimalColor: Color?,
     tooFarText: String?,
     tooCloseText: String?,
-    tooOptimalText: String?,
-    tooDarkText: String?,
-    tooBrightText: String?,
-    adjustAngleText: String?
+    tooOptimalText: String?
 ) {
     var previewView by remember { mutableStateOf<UIView?>(null) }
     var isCameraInactive by remember { mutableStateOf(false) }
@@ -119,10 +116,7 @@ public actual fun CameraPreview(
                 tooOptimalColor = tooOptimalColor!!,
                 tooFarText = tooFarText!!,
                 tooCloseText = tooCloseText!!,
-                tooOptimalText = tooOptimalText!!,
-                tooDarkText = tooDarkText!!,
-                tooBrightText = tooBrightText!!,
-                adjustAngleText = adjustAngleText!!
+                tooOptimalText = tooOptimalText!!
             )
         }
 

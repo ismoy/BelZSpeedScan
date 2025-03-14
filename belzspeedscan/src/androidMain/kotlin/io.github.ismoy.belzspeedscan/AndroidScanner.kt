@@ -27,7 +27,6 @@ class AndroidScanner(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner,
     private val previewView: PreviewView,
-    private val isQRScanning: Boolean,
     var onCodeScanned: (String) -> Unit,
     private val playSound: Boolean,
     private val delayToNextScan:Long,
@@ -106,7 +105,6 @@ class AndroidScanner(
                                     playBeepSound()
                                     onCodeScanned(code)
                                 },
-                                isQRScanning = isQRScanning,
                                 onDistanceChanged = {distance->
                                     _scanDistance.value = distance
                                 },

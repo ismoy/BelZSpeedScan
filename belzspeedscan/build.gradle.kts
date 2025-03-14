@@ -107,7 +107,7 @@ mavenPublishing{
     coordinates(
         groupId = "io.github.ismoy",
         artifactId = "belzspeedscan",
-        version = "1.0.7-alpha07"
+        version = "1.0.10"
     )
     pom {
         name.set("BelZSpeedScan")
@@ -132,7 +132,7 @@ mavenPublishing{
             }
         }
         scm {
-            url.set("https://github.com/ismoy/BelZSpeedScan")
+            url.set("https://github.com/ismoy/DemoBelZSpeedScan")
         }
     }
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)

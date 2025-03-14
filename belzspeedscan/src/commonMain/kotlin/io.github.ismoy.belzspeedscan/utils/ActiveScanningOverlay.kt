@@ -41,9 +41,6 @@ fun ActiveScanningOverlay(
     tooFarText:String,
     tooCloseText:String,
     tooOptimalText:String,
-    tooDarkText:String,
-    tooBrightText:String,
-    adjustAngleText:String,
 
 ) {
 
@@ -59,19 +56,6 @@ fun ActiveScanningOverlay(
         CameraPositionDistance.OPTIMAL -> Pair(
             tooOptimalColor,
             tooOptimalText
-        )
-
-        CameraPositionDistance.TOO_DARK -> Pair(
-            tooCloseColor,
-            tooDarkText
-        )
-        CameraPositionDistance.TOO_BRIGHT -> Pair(
-            tooCloseColor,
-            tooBrightText
-        )
-        CameraPositionDistance.ADJUST_ANGLE -> Pair(
-            tooCloseColor,
-            adjustAngleText
         )
     }
 

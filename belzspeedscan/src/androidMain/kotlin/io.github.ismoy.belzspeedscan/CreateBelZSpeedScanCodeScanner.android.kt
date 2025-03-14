@@ -9,7 +9,6 @@ actual fun createBelSpeedScanCodeScanner(
     context: Any?,
     lifecycleOwner: Any?,
     previewView: Any,
-    isQRScanning: Boolean,
     playSound: Boolean,
     resourceName:String,
     resourceExtension:String,
@@ -18,5 +17,5 @@ actual fun createBelSpeedScanCodeScanner(
     onCodeScanned: (String) -> Unit,
 ): CodeScanner {
     return AndroidScanner(context as Context, lifecycleOwner as LifecycleOwner,
-        previewView as PreviewView,isQRScanning,onCodeScanned,playSound,delayToNextScan,areaRatioThreshold)
+        previewView as PreviewView,onCodeScanned,playSound,delayToNextScan,areaRatioThreshold)
 }

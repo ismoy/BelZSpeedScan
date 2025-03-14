@@ -6,7 +6,6 @@ expect fun createBelSpeedScanCodeScanner(
     context: Any?,
     lifecycleOwner: Any?,
     previewView: Any,
-    isQRScanning:Boolean,
     playSound: Boolean,
     resourceName:String,
     resourceExtension:String,

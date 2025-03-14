@@ -11,7 +11,6 @@ import io.github.ismoy.belzspeedscan.data.model.CameraPositionDistance
 
 class MLKitBarcodeAnalyzer(
     private val onCodeScanned: (String) -> Unit,
-    private val isQRScanning: Boolean,
     private val onDistanceChanged: (CameraPositionDistance) -> Unit,
     private val delayToNextScan: Long,
     private val areaRatioThreshold: Float
@@ -64,24 +63,22 @@ class MLKitBarcodeAnalyzer(
     }
 
     private fun isValidBarcodeFormat(barcode: Barcode): Boolean {
-        return if (isQRScanning) {
-            barcode.format == Barcode.FORMAT_QR_CODE
-        } else {
-            barcode.format in listOf(
-                Barcode.FORMAT_CODE_128,
-                Barcode.FORMAT_CODE_39,
-                Barcode.FORMAT_EAN_13,
-                Barcode.FORMAT_EAN_8,
-                Barcode.FORMAT_UPC_A,
-                Barcode.FORMAT_UPC_E,
-                Barcode.FORMAT_PDF417,
-                Barcode.FORMAT_AZTEC,
-                Barcode.FORMAT_DATA_MATRIX,
-                Barcode.FORMAT_CODE_93,
-                Barcode.FORMAT_ITF,
-                Barcode.FORMAT_CODABAR
-            )
-        }
+        return (
+                barcode.format in listOf(
+                    Barcode.FORMAT_CODE_128,
+                    Barcode.FORMAT_CODE_39,
+                    Barcode.FORMAT_EAN_13,
+                    Barcode.FORMAT_EAN_8,
+                    Barcode.FORMAT_UPC_A,
+                    Barcode.FORMAT_UPC_E,
+                    Barcode.FORMAT_PDF417,
+                    Barcode.FORMAT_AZTEC,
+                    Barcode.FORMAT_DATA_MATRIX,
+                    Barcode.FORMAT_CODE_93,
+                    Barcode.FORMAT_ITF,
+                    Barcode.FORMAT_CODABAR,
+                    Barcode.FORMAT_QR_CODE,
+                ))
     }
 
     private fun processBarcodeDistance(barcode: Barcode, imageProxy: ImageProxy) {

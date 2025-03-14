@@ -36,9 +36,6 @@ actual fun CameraPreview(
     tooFarText: String?,
     tooCloseText: String?,
     tooOptimalText: String?,
-    tooDarkText: String?,
-    tooBrightText: String?,
-    adjustAngleText: String?
 ) {
     var isCameraInactive by remember { mutableStateOf(false) }
     var lastActivityTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
@@ -123,9 +120,6 @@ actual fun CameraPreview(
                 tooFarText = tooFarText!!,
                 tooCloseText = tooCloseText!!,
                 tooOptimalText = tooOptimalText!!,
-                tooDarkText = tooDarkText!!,
-                tooBrightText = tooBrightText!!,
-                adjustAngleText = adjustAngleText!!
             )
         }
 

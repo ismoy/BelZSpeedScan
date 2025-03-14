@@ -71,7 +71,6 @@ import platform.darwin.dispatch_queue_create
 @OptIn(ExperimentalForeignApi::class)
 class IOSScanner(
     private var previewView: UIView,
-    private val isQRScanning: Boolean,
     private val playSound: Boolean,
     private val resourceName:String,
     private val resourceExtension:String,
@@ -395,23 +394,20 @@ class IOSScanner(
         if (session.canAddOutput(metadataOutput)) {
             session.addOutput(metadataOutput)
 
-            metadataOutput.metadataObjectTypes = if (isQRScanning) {
-                listOf(AVMetadataObjectTypeQRCode)
-            } else {
-                listOf(
-                    AVMetadataObjectTypeEAN13Code,
-                    AVMetadataObjectTypeEAN8Code,
-                    AVMetadataObjectTypeCode128Code,
-                    AVMetadataObjectTypeCode39Code,
-                    AVMetadataObjectTypeCode93Code,
-                    AVMetadataObjectTypeUPCECode,
-                    AVMetadataObjectTypeDataMatrixCode,
-                    AVMetadataObjectTypeAztecCode,
-                    AVMetadataObjectTypePDF417Code,
-                    AVMetadataObjectTypeITF14Code,
-                    AVMetadataObjectTypeCodabarCode,
-                )
-            }
+            metadataOutput.metadataObjectTypes = listOf(
+                AVMetadataObjectTypeEAN13Code,
+                AVMetadataObjectTypeEAN8Code,
+                AVMetadataObjectTypeCode128Code,
+                AVMetadataObjectTypeCode39Code,
+                AVMetadataObjectTypeCode93Code,
+                AVMetadataObjectTypeUPCECode,
+                AVMetadataObjectTypeDataMatrixCode,
+                AVMetadataObjectTypeAztecCode,
+                AVMetadataObjectTypePDF417Code,
+                AVMetadataObjectTypeITF14Code,
+                AVMetadataObjectTypeCodabarCode,
+                AVMetadataObjectTypeQRCode
+            )
 
             metadataDelegate = ScannerMetadataDelegate()
             metadataOutput.setMetadataObjectsDelegate(
