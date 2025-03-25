@@ -63,6 +63,7 @@ kotlin {
                 implementation(libs.barcode.scanning)
                 implementation(libs.startup.runtime)
                 implementation(libs.browser)
+                implementation ("com.google.firebase:firebase-analytics-ktx:21.5.0")
             }
         }
         val iosResourcesDir =
@@ -107,7 +108,7 @@ mavenPublishing{
     coordinates(
         groupId = "io.github.ismoy",
         artifactId = "belzspeedscan",
-        version = "1.0.10"
+        version = "1.0.10-alpha-007"
     )
     pom {
         name.set("BelZSpeedScan")

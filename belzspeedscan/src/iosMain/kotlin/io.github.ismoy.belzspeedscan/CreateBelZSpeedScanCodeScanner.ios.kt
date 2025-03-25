@@ -1,6 +1,7 @@
 package io.github.ismoy.belzspeedscan
 
 import IOSScanner
+import io.github.ismoy.belzspeedscan.data.model.SecurityAlertInfo
 import io.github.ismoy.belzspeedscan.domain.CodeScanner
 import platform.UIKit.UIView
 
@@ -14,6 +15,9 @@ actual fun createBelSpeedScanCodeScanner(
     delayToNextScan:Long,
     areaRatioThreshold:Float,
     onCodeScanned: (String) -> Unit,
+    onSecurityAlert: (SecurityAlertInfo) -> Unit,
+    onCameraError: ((String) -> Unit)?
 ): CodeScanner {
-    return IOSScanner(previewView as UIView,playSound,resourceName,resourceExtension,delayToNextScan,onCodeScanned)
+    return IOSScanner(previewView as UIView,playSound,resourceName,resourceExtension,delayToNextScan,
+        onCodeScanned,onSecurityAlert,onCameraError)
 }
