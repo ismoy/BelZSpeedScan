@@ -17,6 +17,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import io.github.ismoy.belzspeedscan.data.model.CameraPositionDistance
+import io.github.ismoy.belzspeedscan.data.model.SecurityAlertInfo
 import io.github.ismoy.belzspeedscan.domain.CodeScanner
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +31,9 @@ class AndroidScanner(
     var onCodeScanned: (String) -> Unit,
     private val playSound: Boolean,
     private val delayToNextScan:Long,
-    private val areaRatioThreshold:Float
+    private val areaRatioThreshold:Float,
+    private val onSecurityAlert: (SecurityAlertInfo) -> Unit,
+    private val onCameraError: ((String) -> Unit)? = null
 ) : CodeScanner {
 
     private var cameraProvider: ProcessCameraProvider? = null
@@ -84,7 +87,8 @@ class AndroidScanner(
         if (!isScannerActive) return
 
         try {
-            cameraProvider?.unbindAll()
+            val cameraProvider = cameraProvider ?: return
+            cameraProvider.unbindAll()
 
             preview = Preview.Builder()
                 .build()
@@ -109,7 +113,10 @@ class AndroidScanner(
                                     _scanDistance.value = distance
                                 },
                                 delayToNextScan = delayToNextScan,
-                                areaRatioThreshold = areaRatioThreshold
+                                areaRatioThreshold = areaRatioThreshold,
+                                onSecurityAlert = {securityInfoData->
+                                    onSecurityAlert.invoke(securityInfoData)
+                                }
                             )
                         )
                         isAnalyzerBound = true
@@ -120,7 +127,7 @@ class AndroidScanner(
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
 
-            camera = cameraProvider?.bindToLifecycle(
+            camera = cameraProvider.bindToLifecycle(
                 lifecycleOwner,
                 cameraSelector,
                 preview,
@@ -129,6 +136,7 @@ class AndroidScanner(
 
         } catch (exc: Exception) {
             Log.e("CameraX", "Error al vincular casos de uso", exc)
+            onCameraError?.invoke("No se pudo iniciar la cámara: ${exc.localizedMessage}")
         }
     }
 

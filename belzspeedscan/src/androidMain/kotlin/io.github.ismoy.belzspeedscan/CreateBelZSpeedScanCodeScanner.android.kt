@@ -3,6 +3,7 @@ package io.github.ismoy.belzspeedscan
 import android.content.Context
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
+import io.github.ismoy.belzspeedscan.data.model.SecurityAlertInfo
 import io.github.ismoy.belzspeedscan.domain.CodeScanner
 
 actual fun createBelSpeedScanCodeScanner(
@@ -15,7 +16,10 @@ actual fun createBelSpeedScanCodeScanner(
     delayToNextScan:Long,
     areaRatioThreshold:Float,
     onCodeScanned: (String) -> Unit,
+    onSecurityAlert: (SecurityAlertInfo) -> Unit,
+    onCameraError: ((String) -> Unit)?
 ): CodeScanner {
     return AndroidScanner(context as Context, lifecycleOwner as LifecycleOwner,
-        previewView as PreviewView,onCodeScanned,playSound,delayToNextScan,areaRatioThreshold)
+        previewView as PreviewView,onCodeScanned,playSound,delayToNextScan,areaRatioThreshold,
+        onSecurityAlert,onCameraError)
 }

@@ -29,6 +29,7 @@ actual fun RequestCameraPermission(
     btnDialogDenied: String,
     customDeniedDialog: @Composable ((onRetry: () -> Unit) -> Unit)?,
     customSettingsDialog: @Composable ((onOpenSettings: () -> Unit) -> Unit)?,
+    onPermissionPermanentlyDenied: () -> Unit,
     onResult: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
@@ -36,6 +37,11 @@ actual fun RequestCameraPermission(
     var permissionDeniedPermanently by remember { mutableStateOf(false) }
     var permissionDeniedCount by remember { mutableIntStateOf(0) }
 
+    if (permissionDeniedPermanently) {
+        LaunchedEffect(Unit) {
+            onPermissionPermanentlyDenied()
+        }
+    }
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->

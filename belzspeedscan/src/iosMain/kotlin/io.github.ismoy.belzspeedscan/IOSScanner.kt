@@ -1,4 +1,7 @@
+import io.github.ismoy.belzspeedscan.core.determineReason
+import io.github.ismoy.belzspeedscan.core.isValidDataPattern
 import io.github.ismoy.belzspeedscan.data.model.CameraPositionDistance
+import io.github.ismoy.belzspeedscan.data.model.SecurityAlertInfo
 import io.github.ismoy.belzspeedscan.domain.CodeScanner
 import io.github.ismoy.belzspeedscan.utils.currentTimeMillis
 import kotlinx.cinterop.CValue
@@ -76,6 +79,8 @@ class IOSScanner(
     private val resourceExtension:String,
     private val delayToNextScan: Long,
     var onCodeScanned: (String) -> Unit,
+    private val onSecurityAlert: (SecurityAlertInfo) -> Unit,
+    private val onCameraError: ((String) -> Unit)? = null
 ) : CodeScanner {
 
     private var captureSession: AVCaptureSession? = null
@@ -91,6 +96,9 @@ class IOSScanner(
     private val _scanDistance = MutableStateFlow(CameraPositionDistance.TOO_FAR)
     val scanDistance: StateFlow<CameraPositionDistance> = _scanDistance.asStateFlow()
     private var monitoringTimer: NSTimer? = null
+    private val MALICIOUS_CODE_COOLDOWN = 3000L
+    private var lastMaliciousCode: String? = null
+    private var lastMaliciousTime: Long = 0
 
 
     init {
@@ -190,6 +198,25 @@ class IOSScanner(
                     readableObject?.let {
                         val code = it.stringValue ?: return@let
 
+                        if (!isValidDataPattern(code)) {
+                            // Verificar si ya se mostró una alerta recientemente para este código
+                            if (code == lastMaliciousCode &&
+                                (currentTime - lastMaliciousTime) < MALICIOUS_CODE_COOLDOWN) {
+                                return@let
+                            }
+
+                            val reason = determineReason(code)
+                            val alertInfo = SecurityAlertInfo(
+                                message = "¡Advertencia! Se ha detectado un código potencialmente malicioso",
+                                codeValue = code,
+                                reason = reason
+                            )
+                            onSecurityAlert(alertInfo)
+
+                            lastMaliciousCode = code
+                            lastMaliciousTime = currentTime
+                            return@let
+                        }
                         val lastScanTime = lastScannedTimes[code] ?: 0L
                         val timeSinceLastScan = currentTime - lastScanTime
                         if (timeSinceLastScan > delayToNextScan) {
@@ -283,7 +310,10 @@ class IOSScanner(
             newSession.sessionPreset = AVCaptureSessionPresetHigh
 
             val device = getCameraDevice()
-                ?: throw RuntimeException("No camera available")
+            if (device == null) {
+                onCameraError?.invoke("No se pudo encontrar un dispositivo de cámara disponible")
+                return
+            }
 
             configureDevice(device)
             setupCameraObserver(device)
@@ -292,6 +322,9 @@ class IOSScanner(
 
             if (newSession.canAddInput(input)) {
                 newSession.addInput(input)
+            } else {
+                onCameraError?.invoke("No se pudo añadir la entrada a la sesión de cámara")
+                return
             }
 
 
@@ -314,6 +347,7 @@ class IOSScanner(
             }
         } catch (e: Exception) {
             println("IOSScanner: Error en setupCamera: ${e.message}")
+            onCameraError?.invoke("Error al configurar la cámara: ${e.message ?: "Error desconocido"}")
         }
     }
 
@@ -358,6 +392,7 @@ class IOSScanner(
             device.unlockForConfiguration()
         } catch (e: Exception) {
             device.unlockForConfiguration()
+            onCameraError?.invoke("Error al configurar el dispositivo de cámara: ${e.message ?: "Error desconocido"}")
         }
     }
 

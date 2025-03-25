@@ -7,13 +7,17 @@ import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import io.github.ismoy.belzspeedscan.core.determineReason
+import io.github.ismoy.belzspeedscan.core.isValidDataPattern
 import io.github.ismoy.belzspeedscan.data.model.CameraPositionDistance
+import io.github.ismoy.belzspeedscan.data.model.SecurityAlertInfo
 
 class MLKitBarcodeAnalyzer(
     private val onCodeScanned: (String) -> Unit,
     private val onDistanceChanged: (CameraPositionDistance) -> Unit,
     private val delayToNextScan: Long,
-    private val areaRatioThreshold: Float
+    private val areaRatioThreshold: Float,
+    private val onSecurityAlert: (SecurityAlertInfo) -> Unit
 ) : ImageAnalysis.Analyzer {
 
     private val scanner = BarcodeScanning.getClient()
@@ -23,7 +27,9 @@ class MLKitBarcodeAnalyzer(
     private val REQUIRED_CONSECUTIVE_READINGS = 2
     private var lastDistances = mutableListOf<CameraPositionDistance>()
     private val DISTANCE_BUFFER_SIZE = 3
-
+    private val MALICIOUS_CODE_COOLDOWN = 3000L
+    private var lastMaliciousCode: String? = null
+    private var lastMaliciousTime: Long = 0
     @SuppressLint("UnsafeOptInUsageError")
     override fun analyze(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
@@ -63,8 +69,7 @@ class MLKitBarcodeAnalyzer(
     }
 
     private fun isValidBarcodeFormat(barcode: Barcode): Boolean {
-        return (
-                barcode.format in listOf(
+        val  validFormat = barcode.format in listOf(
                     Barcode.FORMAT_CODE_128,
                     Barcode.FORMAT_CODE_39,
                     Barcode.FORMAT_EAN_13,
@@ -78,7 +83,11 @@ class MLKitBarcodeAnalyzer(
                     Barcode.FORMAT_ITF,
                     Barcode.FORMAT_CODABAR,
                     Barcode.FORMAT_QR_CODE,
-                ))
+                )
+        val rawValue = barcode.rawValue ?: return false
+
+        if (rawValue.length > 1000) return false
+        return validFormat
     }
 
     private fun processBarcodeDistance(barcode: Barcode, imageProxy: ImageProxy) {
@@ -97,20 +106,43 @@ class MLKitBarcodeAnalyzer(
 
     private fun processBarcodeValue(barcode: Barcode, currentTime: Long) {
         barcode.rawValue?.let { value ->
-            if (getSmoothedDistance() == CameraPositionDistance.OPTIMAL) {
-                if (value == lastScannedCode) {
-                    consecutiveReadings++
-                    if (consecutiveReadings >= REQUIRED_CONSECUTIVE_READINGS &&
-                        (currentTime - lastScannedTime) > delayToNextScan
-                    ) {
-                        lastScannedTime = currentTime
-                        onCodeScanned(value)
-                        consecutiveReadings = 0
-                    }
-                } else {
-                    consecutiveReadings = 1
-                    lastScannedCode = value
+            if (!isValidDataPattern(value)) {
+                if (value == lastMaliciousCode &&
+                    (currentTime - lastMaliciousTime) < MALICIOUS_CODE_COOLDOWN) {
+                    return
                 }
+                val reason = determineReason(value)
+                val alertInfo = SecurityAlertInfo(
+                    message = "¡Advertencia! Se ha detectado un código potencialmente malicioso",
+                    codeValue = value,
+                    reason = reason
+                )
+                onSecurityAlert(alertInfo)
+
+                lastMaliciousCode = value
+                lastMaliciousTime = currentTime
+
+                lastScannedCode = value
+                lastScannedTime = currentTime
+            } else {
+                processBarcodeNormalValue(value, currentTime)
+            }
+        }
+    }
+    private fun processBarcodeNormalValue(value: String, currentTime: Long) {
+        if (getSmoothedDistance() == CameraPositionDistance.OPTIMAL) {
+            if (value == lastScannedCode) {
+                consecutiveReadings++
+                if (consecutiveReadings >= REQUIRED_CONSECUTIVE_READINGS &&
+                    (currentTime - lastScannedTime) > delayToNextScan
+                ) {
+                    lastScannedTime = currentTime
+                    onCodeScanned(value)
+                    consecutiveReadings = 0
+                }
+            } else {
+                consecutiveReadings = 1
+                lastScannedCode = value
             }
         }
     }

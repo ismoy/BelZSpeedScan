@@ -29,35 +29,26 @@ actual fun RequestCameraPermission(
     btnDialogDenied: String,
     customDeniedDialog: (@Composable (onRetry: () -> Unit) -> Unit)?,
     customSettingsDialog: (@Composable (onOpenSettings: () -> Unit) -> Unit)?,
+    onPermissionPermanentlyDenied: () -> Unit,
     onResult: (Boolean) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var isPermissionDeniedPermanently by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        when (AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)) {
-            AVAuthorizationStatusAuthorized -> {
-                onResult(true)
-            }
-            AVAuthorizationStatusNotDetermined -> {
-                AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
-                    if (granted) {
-                        onResult(true)
-                    } else {
-                        isPermissionDeniedPermanently = true
-                        showDialog = true
-                    }
-                }
-            }
-            AVAuthorizationStatusDenied -> {
-                isPermissionDeniedPermanently = true
-                showDialog = true
-            }
-            else -> {
-                isPermissionDeniedPermanently = true
-                showDialog = true
-            }
+    LaunchedEffect(isPermissionDeniedPermanently) {
+        if (isPermissionDeniedPermanently) {
+            onPermissionPermanentlyDenied()
         }
+    }
+
+    LaunchedEffect(Unit) {
+        checkAndRequestPermission(
+            onGranted = { onResult(true) },
+            onDenied = {
+                isPermissionDeniedPermanently = true
+                showDialog = true
+            }
+        )
     }
 
     if (showDialog) {
@@ -79,7 +70,7 @@ actual fun RequestCameraPermission(
             if (customDeniedDialog != null) {
                 customDeniedDialog {
                     showDialog = false
-                    AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
+                    requestCameraAccess { granted ->
                         onResult(granted)
                     }
                 }
@@ -90,7 +81,7 @@ actual fun RequestCameraPermission(
                     confirmButtonText = btnDialogDenied,
                     onConfirm = {
                         showDialog = false
-                        AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
+                        requestCameraAccess { granted ->
                             onResult(granted)
                         }
                     }
@@ -100,9 +91,34 @@ actual fun RequestCameraPermission(
     }
 }
 
+private fun checkAndRequestPermission(
+    onGranted: () -> Unit,
+    onDenied: () -> Unit
+) {
+    when (AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)) {
+        AVAuthorizationStatusAuthorized -> {
+            onGranted()
+        }
+        AVAuthorizationStatusNotDetermined -> {
+            requestCameraAccess { granted ->
+                if (granted) onGranted() else onDenied()
+            }
+        }
+        else -> {
+            onDenied()
+        }
+    }
+}
+
+private fun requestCameraAccess(callback: (Boolean) -> Unit) {
+    AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
+        callback(granted)
+    }
+}
+
 private fun openSettings() {
     val settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString)
-    if (UIApplication.sharedApplication.canOpenURL(settingsUrl!!)) {
+    if (settingsUrl != null && UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
         if (UIDevice.currentDevice.systemVersion.toDouble() >= 10.0) {
             UIApplication.sharedApplication.openURL(
                 settingsUrl,

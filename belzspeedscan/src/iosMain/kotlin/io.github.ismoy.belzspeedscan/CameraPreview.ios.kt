@@ -27,7 +27,7 @@ import platform.UIKit.UIColor
 import platform.UIKit.UIView
 @Composable
 @OptIn(ExperimentalForeignApi::class)
-public actual fun CameraPreview(
+actual fun CameraPreview(
     onPreviewViewReady: (Any) -> Unit,
     scanner: CodeScanner?,
     modifier: Modifier,
@@ -109,14 +109,14 @@ public actual fun CameraPreview(
         if (!isCameraInactive) {
             val currentDistance by remember { derivedStateOf { scanDistance } }
             ActiveScanningOverlay(
-                watermark = waterMark!!,
+                watermark = waterMark ?: "BelZSpeedScan",
                 scanDistance = currentDistance,
-                tooFarColor = tooFarColor!!,
-                tooCloseColor = tooCloseColor!!,
-                tooOptimalColor = tooOptimalColor!!,
-                tooFarText = tooFarText!!,
-                tooCloseText = tooCloseText!!,
-                tooOptimalText = tooOptimalText!!
+                tooFarColor = tooFarColor ?: Color.Red,
+                tooCloseColor = tooCloseColor ?: Color.Red,
+                tooOptimalColor = tooOptimalColor ?: Color.Green,
+                tooFarText = tooFarText ?: "Bring the code closer to the camera\nDistance too far",
+                tooCloseText = tooCloseText ?: "Move the code away from the camera \nToo close",
+                tooOptimalText = tooOptimalText ?: "Perfect distance!\nKeep the code with in the frame",
             )
         }
 

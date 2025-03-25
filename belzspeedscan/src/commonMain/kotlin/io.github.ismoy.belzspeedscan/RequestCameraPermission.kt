@@ -12,5 +12,6 @@ expect fun RequestCameraPermission(
     btnDialogDenied:String = "Grant Permission",
     customDeniedDialog: (@Composable (onRetry: () -> Unit) -> Unit)? = null,
     customSettingsDialog: (@Composable (onOpenSettings: () -> Unit) -> Unit)? = null,
+    onPermissionPermanentlyDenied: () -> Unit = {},
     onResult: (Boolean) -> Unit
 )

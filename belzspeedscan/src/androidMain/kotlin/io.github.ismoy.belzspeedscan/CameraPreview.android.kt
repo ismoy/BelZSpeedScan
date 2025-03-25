@@ -112,14 +112,14 @@ actual fun CameraPreview(
 
         if (!isCameraInactive) {
             ActiveScanningOverlay(
-                watermark = waterMark!!,
+                watermark = waterMark ?: "BelZSpeedScan",
                 scanDistance = scanDistance,
-                tooFarColor = tooFarColor!!,
-                tooCloseColor = tooCloseColor!!,
-                tooOptimalColor = tooOptimalColor!!,
-                tooFarText = tooFarText!!,
-                tooCloseText = tooCloseText!!,
-                tooOptimalText = tooOptimalText!!,
+                tooFarColor = tooFarColor ?: Color.Red,
+                tooCloseColor = tooCloseColor ?: Color.Red,
+                tooOptimalColor = tooOptimalColor ?: Color.Green,
+                tooFarText = tooFarText ?: "Bring the code closer to the camera\nDistance too far",
+                tooCloseText = tooCloseText ?: "Move the code away from the camera \nToo close",
+                tooOptimalText = tooOptimalText ?: "Perfect distance!\nKeep the code with in the frame",
             )
         }
 
