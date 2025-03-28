@@ -18,9 +18,10 @@ BelZSpeedScan is a lightweight and easy-to-use library for scanning QR codes and
 [![Swipe](https://img.shields.io/badge/UI-Swipe%20Gestures-red.svg)](https://github.com/ismoy/kmpswipe)
 [![UX](https://img.shields.io/badge/UX-Haptic%20Feedback-blueviolet.svg)](https://github.com/ismoy/kmpswipe)
 # Demonstrations
-| Android 
-|---------|
-| ![Scanner](https://github.com/ismoy/DemoBelzSpeedScan/blob/main/demoCamera_compressed.gif)
+| Android | iOS |
+|---------|-----|
+| ![Android](https://github.com/ismoy/DemoBelzSpeedScan/blob/main/demoCamera_compressed.gif) | ![Demo](https://github.com/ismoy/BelZSpeedScan/blob/main/images/iosDemo%20(1).gif) |
+
 
 ## Installation
 
@@ -106,8 +107,9 @@ fun CameraManagerUtils(
     RequestCameraPermission { granted ->
         hasCameraPermission = granted
     }
-
-    Scaffold(
+ var securityAlertVisible by remember { mutableStateOf(false) }
+ var securityAlertMessage by remember { mutableStateOf("") }
+Scaffold(
         content = { innerPadding ->
             if (hasCameraPermission) {
                 Box(
@@ -124,12 +126,15 @@ fun CameraManagerUtils(
                                     lifecycleOwner = lifecycleOwner,
                                     previewView = preview,
                                     playSound = true,
-                                    resourceName = "beep",// Is required the resource name to emit a scan beep in IOS
-                                    resourceExtension = "mp3",// Is required the resource extension to emit a scan beep in IOS
-                                    delayToNextScan = 2000,// The waiting time for the next scan can be changed 
+                                    resourceName = "beep",
+                                    resourceExtension = "mp3",
+                                    delayToNextScan = 3000,
                                     onCodeScanned = { scannedText ->
-                                    // Scan result
                                         onCodeScanned(scannedText)
+                                    },
+                                    onSecurityAlert = {securityAlertInfo->
+                                        securityAlertMessage = "${securityAlertInfo.message}\n${securityAlertInfo.codeValue}\nRazón: ${securityAlertInfo.reason}"
+                                        securityAlertVisible = true
                                     }
                                 ).also {
                                     it.startScanning()
@@ -137,10 +142,30 @@ fun CameraManagerUtils(
                             },
                             scanner = currentScanner,
                             modifier = Modifier.fillMaxHeight(1F),
-                            tooFarText = "",// Put your UX message or use the default message
-                            tooOptimalText = "",// Put your UX message or use the default message
                         )
                     }
+                    if (securityAlertVisible) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CustomTooltip(
+                                icon = Icons.Filled.Warning,
+                                text = securityAlertMessage,
+                                bottomImage = HorizontalLinePainter(),
+                                modifier = Modifier
+                                    .fillMaxWidth(0.9f)
+                            )
+                        }
+                    }
+                    GlobalScope.launch {
+                        delay(2000)
+                        securityAlertVisible = false
+                    }
+
+
 
                 }
             } else {
