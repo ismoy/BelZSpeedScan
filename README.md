@@ -36,7 +36,7 @@ repositories {
 
 dependencies {
     commonMain {
-        implementation("io.github.ismoy:belzspeedscan:1.0.10") // Replace with the actual version
+        implementation("io.github.ismoy:belzspeedscan:1.0.11") // Replace with the actual version
     }
     // ... other dependencies
 }
