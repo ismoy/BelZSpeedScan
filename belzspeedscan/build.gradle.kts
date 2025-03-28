@@ -108,7 +108,7 @@ mavenPublishing{
     coordinates(
         groupId = "io.github.ismoy",
         artifactId = "belzspeedscan",
-        version = "1.0.10-alpha-007"
+        version = "1.0.11"
     )
     pom {
         name.set("BelZSpeedScan")
