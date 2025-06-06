@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.google.services)
     id("com.vanniktech.maven.publish") version "0.30.0"
     id("maven-publish")
 }

@@ -1,0 +1,25 @@
+{
+  "project_info": {
+    "project_number": "000000000000",
+    "project_id": "belzspeedscan-example"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:0000000000000000",
+        "android_client_info": {
+          "package_name": "io.github.ismoy"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "FAKE_KEY"
+        }
+      ],
+      "analytics_service": {
+        "status": "ENABLED"
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -329,3 +329,21 @@ If you need emit a sound when the code scan., go to `composeApp/iosMain/resource
 
 Good news! Native iOS support is on the way. We're working hard to bring the functionality of BelZSpeedScan to the iOS platform, allowing you to use the same scanning logic in your iOS applications. Stay tuned for future updates and announcements regarding the availability of iOS support.
 ## This detailed explanation should help you integrate BelZSpeedScan into your KMP and Android projects effectively. Remember to replace placeholder version numbers and adapt the code to your specific UI and application logic.
+
+## Usage Analytics
+BelZSpeedScan can emit anonymous usage statistics to help you understand how scanning performs inside your app. Tracking is **disabled by default**. To enable it, assign an `AnalyticsLogger` implementation and set `AnalyticsManager.enabled = true` before creating the scanner:
+
+```kotlin
+import io.github.ismoy.belzspeedscan.analytics.AnalyticsManager
+import io.github.ismoy.belzspeedscan.analytics.FirebaseAnalyticsLogger
+
+AnalyticsManager.logger = FirebaseAnalyticsLogger(Firebase.analytics)
+AnalyticsManager.enabled = true
+```
+
+You may implement `AnalyticsLogger` yourself to forward events to any analytics solution. Events include scan start, success with duration, camera errors and security alerts.
+
+### Firebase setup
+
+1. Apply the `com.google.gms.google-services` plugin in your Gradle build and add the Firebase Analytics dependency.
+2. Place your `google-services.json` file in the `belzspeedscan/` module root. A placeholder file is provided that you can replace with your own configuration.

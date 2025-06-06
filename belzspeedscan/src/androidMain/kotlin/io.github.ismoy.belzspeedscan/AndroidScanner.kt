@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.abs
+import io.github.ismoy.belzspeedscan.analytics.AnalyticsEvent
+import io.github.ismoy.belzspeedscan.analytics.AnalyticsManager
 
 class AndroidScanner(
     private val context: Context,
@@ -47,6 +49,7 @@ class AndroidScanner(
     private var scanBeepSound: Int = 0
     private val _scanDistance = MutableStateFlow(CameraPositionDistance.TOO_FAR)
     val scanDistance: StateFlow<CameraPositionDistance> = _scanDistance.asStateFlow()
+    private var scanStartTime: Long = 0
 
     init {
         if (playSound) {
@@ -76,6 +79,8 @@ class AndroidScanner(
 
     override fun startScanning() {
         isScannerActive = true
+        scanStartTime = System.currentTimeMillis()
+        AnalyticsManager.log(AnalyticsEvent.ScanStarted)
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener({
             cameraProvider = cameraProviderFuture.get()
@@ -107,6 +112,8 @@ class AndroidScanner(
                             MLKitBarcodeAnalyzer(
                                 onCodeScanned = { code ->
                                     playBeepSound()
+                                    val duration = System.currentTimeMillis() - scanStartTime
+                                    AnalyticsManager.log(AnalyticsEvent.ScanSucceeded(duration))
                                     onCodeScanned(code)
                                 },
                                 onDistanceChanged = {distance->
@@ -115,6 +122,7 @@ class AndroidScanner(
                                 delayToNextScan = delayToNextScan,
                                 areaRatioThreshold = areaRatioThreshold,
                                 onSecurityAlert = {securityInfoData->
+                                    AnalyticsManager.log(AnalyticsEvent.SecurityAlert(securityInfoData.reason))
                                     onSecurityAlert.invoke(securityInfoData)
                                 }
                             )
@@ -136,6 +144,7 @@ class AndroidScanner(
 
         } catch (exc: Exception) {
             Log.e("CameraX", "Error al vincular casos de uso", exc)
+            AnalyticsManager.log(AnalyticsEvent.ScanError(exc.localizedMessage ?: "camera_error"))
             onCameraError?.invoke("No se pudo iniciar la cámara: ${exc.localizedMessage}")
         }
     }

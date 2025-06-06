@@ -70,6 +70,8 @@ import platform.darwin.NSObject
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
 import platform.darwin.dispatch_queue_create
+import io.github.ismoy.belzspeedscan.analytics.AnalyticsEvent
+import io.github.ismoy.belzspeedscan.analytics.AnalyticsManager
 
 @OptIn(ExperimentalForeignApi::class)
 class IOSScanner(
@@ -99,6 +101,7 @@ class IOSScanner(
     private val MALICIOUS_CODE_COOLDOWN = 3000L
     private var lastMaliciousCode: String? = null
     private var lastMaliciousTime: Long = 0
+    private var scanStartTime: Long = 0
 
 
     init {
@@ -211,6 +214,7 @@ class IOSScanner(
                                 codeValue = code,
                                 reason = reason
                             )
+                            AnalyticsManager.log(AnalyticsEvent.SecurityAlert(reason))
                             onSecurityAlert(alertInfo)
 
                             lastMaliciousCode = code
@@ -225,6 +229,8 @@ class IOSScanner(
                             lastScannedTimes[code] = currentTime
                             if (isScanning) {
                                 playBeepSound()
+                                val duration = currentTimeMillis() - scanStartTime
+                                AnalyticsManager.log(AnalyticsEvent.ScanSucceeded(duration))
                                 onCodeScanned(code)
                             }
 
@@ -311,6 +317,7 @@ class IOSScanner(
 
             val device = getCameraDevice()
             if (device == null) {
+                AnalyticsManager.log(AnalyticsEvent.ScanError("camera_not_found"))
                 onCameraError?.invoke("No se pudo encontrar un dispositivo de cámara disponible")
                 return
             }
@@ -323,6 +330,7 @@ class IOSScanner(
             if (newSession.canAddInput(input)) {
                 newSession.addInput(input)
             } else {
+                AnalyticsManager.log(AnalyticsEvent.ScanError("cannot_add_input"))
                 onCameraError?.invoke("No se pudo añadir la entrada a la sesión de cámara")
                 return
             }
@@ -347,6 +355,7 @@ class IOSScanner(
             }
         } catch (e: Exception) {
             println("IOSScanner: Error en setupCamera: ${e.message}")
+            AnalyticsManager.log(AnalyticsEvent.ScanError(e.message ?: "camera_setup"))
             onCameraError?.invoke("Error al configurar la cámara: ${e.message ?: "Error desconocido"}")
         }
     }
@@ -392,6 +401,7 @@ class IOSScanner(
             device.unlockForConfiguration()
         } catch (e: Exception) {
             device.unlockForConfiguration()
+            AnalyticsManager.log(AnalyticsEvent.ScanError(e.message ?: "device_config"))
             onCameraError?.invoke("Error al configurar el dispositivo de cámara: ${e.message ?: "Error desconocido"}")
         }
     }
@@ -460,6 +470,8 @@ class IOSScanner(
 
     override fun startScanning() {
         isScanning = true
+        scanStartTime = currentTimeMillis()
+        AnalyticsManager.log(AnalyticsEvent.ScanStarted)
         if (captureSession == null) {
             setupCamera()
         } else {
