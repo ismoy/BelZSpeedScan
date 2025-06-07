@@ -1,4 +1,4 @@
-# [DEMO](https://github.com/ismoy/DemoBelzSpeedScan)
+# [GO TO DEMO](https://github.com/ismoy/DemoBelzSpeedScan)
 ### A Cross-Platform QR Code and Barcode Scanning Library, using MLKIT for decoding.
 
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
