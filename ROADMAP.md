@@ -71,7 +71,7 @@ This document defines the strategic goals to transform **BelZSpeedScan** into a 
 
 1. Check [issues labeled `help wanted`](https://github.com/ismoy/BelZSpeedScan/issues)
 2. Read the [Contributing Guide](CONTRIBUTING.md)
-3. Join the [GitHub Discussions](https://github.com/ismoy/BelZSpeedScan/discussions)
+3. Join the [GitHub Discussions](https://github.com/ismoy/BelZSpeedScan/discussions/)
 
 ---
 
