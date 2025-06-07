@@ -1,100 +1,94 @@
-# Guía para Contribuir a BelZSpeedScan
 
-¡Gracias por tu interés en contribuir a BelZSpeedScan! Este documento proporciona las directrices y el proceso para contribuir al proyecto.
+# Contributing Guide to BelZSpeedScan
 
-## 🎯 ¿Por qué contribuir?
+Thank you for your interest in contributing to BelZSpeedScan! This document provides guidelines and the process for contributing to the project.
 
-BelZSpeedScan es una librería de escaneo de códigos de barras y QR que busca hacer el proceso de escaneo más rápido y eficiente. Tu contribución puede ayudar a:
+## 🎯 Why Contribute?
 
-- Mejorar la experiencia de los usuarios
-- Añadir nuevas funcionalidades
-- Corregir bugs
-- Mejorar la documentación
-- Optimizar el rendimiento
+BelZSpeedScan is a barcode and QR code scanning library designed to make scanning faster and more efficient. Your contribution can help:
 
-## 🚀 ¿Cómo empezar?
+- Improve user experience
+- Add new features
+- Fix bugs
+- Improve documentation
+- Optimize performance
 
-1. **Fork del repositorio**
-   - Haz click en el botón "Fork" en la parte superior derecha de la página del repositorio
+## 🚀 Getting Started
 
-2. **Clona tu fork**
+1. **Fork the repository**
+    - Click the "Fork" button at the top right of the repository page.
+
+2. **Clone your fork**
    ```bash
-   git clone https://github.com/TU-USUARIO/BelZSpeedScan.git
+   git clone https://github.com/YOUR-USERNAME/BelZSpeedScan.git
    cd BelZSpeedScan
-   ```
 
-3. **Configura el entorno de desarrollo**
-   - Asegúrate de tener instalado:
-     - Android Studio (última versión estable)
-     - Xcode (para desarrollo iOS)
-     - Kotlin 1.8.0 o superior
-     - Gradle 7.0 o superior
+	3.	Set up your development environment
+Make sure you have:
+•	Android Studio (latest stable version)
+•	Xcode (for iOS development)
+•	Kotlin 1.8.0 or higher
+•	Gradle 7.0 or higher
+    4.	Create a branch for your feature
 
-4. **Crea una rama para tu feature**
-   ```bash
-   git checkout -b feature/nombre-de-tu-feature
-   ```
+git checkout -b feature/your-feature-name
 
-## 📝 Proceso de Contribución
 
-1. **Desarrollo**
-   - Sigue las convenciones de código existentes
-   - Añade tests para nuevas funcionalidades
-   - Actualiza la documentación según sea necesario
 
-2. **Commits**
-   - Usa mensajes de commit descriptivos
-   - Sigue el formato: `tipo(alcance): descripción`
-   - Ejemplo: `feat(android): añade soporte para escaneo en segundo plano`
+📝 Contribution Process
+1.	Development
+•	Follow existing code conventions
+•	Add tests for new features
+•	Update documentation as needed
+2.	Commits
+•	Use descriptive commit messages
+•	Follow the format: type(scope): description
+•	Example: feat(android): add background scanning support
+3.	Pull Request
+•	Make sure your code compiles and passes all tests
+•	Update documentation if necessary
+•	Clearly describe your changes in the PR
+•	Reference any related issues
 
-3. **Pull Request**
-   - Asegúrate de que tu código compila y pasa todos los tests
-   - Actualiza la documentación si es necesario
-   - Describe claramente los cambios en el PR
-   - Referencia cualquier issue relacionado
+🎨 Style Guide
 
-## 🎨 Guías de Estilo
+Kotlin
+•	Follow the Kotlin Coding Conventions
+•	Use camelCase for variables and functions
+•	Use PascalCase for classes and objects
+•	Keep functions short and focused
 
-### Kotlin
-- Sigue las [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
-- Usa `camelCase` para variables y funciones
-- Usa `PascalCase` para clases y objetos
-- Mantén las funciones cortas y enfocadas
+Documentation
+•	Document all public APIs
+•	Use KDoc for code documentation
+•	Keep the README up to date
 
-### Documentación
-- Documenta todas las APIs públicas
-- Usa KDoc para documentación de código
-- Mantén el README actualizado
+🧪 Testing
+•	Write unit tests for any new functionality
+•	Ensure all tests pass before submitting a PR
+•	Keep test coverage above 80%
 
-## 🧪 Testing
+📋 Pull Request Checklist
+•	Code follows the style guide
+•	Tests have been added for new functionality
+•	Documentation has been updated
+•	Tests pass locally
+•	Code compiles without warnings
+•	Conflicts with the main branch are resolved
 
-- Escribe tests unitarios para nueva funcionalidad
-- Asegúrate de que todos los tests pasan antes de enviar un PR
-- Mantén la cobertura de tests por encima del 80%
+🤝 Code of Conduct
 
-## 📋 Checklist para Pull Requests
+Please read our Code of Conduct before contributing.
 
-- [ ] El código sigue las guías de estilo
-- [ ] Se han añadido tests para nueva funcionalidad
-- [ ] La documentación ha sido actualizada
-- [ ] Los tests pasan localmente
-- [ ] El código compila sin warnings
-- [ ] Se han resuelto conflictos con la rama principal
+❓ Need Help?
+•	Open an issue for questions or problems
+•	Join our GitHub discussions
+•	Reach out to the project maintainers
 
-## 🤝 Código de Conducta
+📜 License
 
-Por favor, lee nuestro [Código de Conducta](CODE_OF_CONDUCT.md) antes de contribuir.
+By contributing, you agree that your code will be licensed under the same license as the project (MIT).
 
-## ❓ ¿Necesitas ayuda?
+⸻
 
-- Abre un issue para preguntas o problemas
-- Únete a nuestras discusiones en GitHub
-- Contacta a los mantenedores del proyecto
-
-## 📜 Licencia
-
-Al contribuir, aceptas que tu código será licenciado bajo la misma licencia que el proyecto (MIT).
-
----
-
-¡Gracias por contribuir a BelZSpeedScan! 🎉 
+Thank you for contributing to BelZSpeedScan! 🎉

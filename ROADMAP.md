@@ -1,74 +1,81 @@
-# Hoja de Ruta de BelZSpeedScan
+# 🚧 BelZSpeedScan Roadmap
 
-Esta hoja de ruta describe los planes futuros y las mejoras previstas para BelZSpeedScan. Las fechas son aproximadas y pueden cambiar según la disponibilidad de recursos y las necesidades de la comunidad.
-
-## 🎯 Objetivos a Corto Plazo (1-3 meses)
-
-### Mejoras de Rendimiento
-- [ ] Optimización del procesamiento de imágenes
-- [ ] Reducción del consumo de memoria
-- [ ] Mejora de la velocidad de escaneo
-
-### Mejoras de UX
-- [ ] Personalización del overlay de cámara
-- [ ] Feedback táctil al escanear
-- [ ] Modo oscuro/claro automático
-
-### Documentación
-- [ ] Guía de migración para versiones anteriores
-- [ ] Ejemplos de código más detallados
-- [ ] Documentación de API completa
-
-## 🚀 Objetivos a Medio Plazo (3-6 meses)
-
-### Nuevas Características
-- [ ] Escaneo en segundo plano
-- [ ] Detección de múltiples códigos simultáneos
-- [ ] Soporte para más formatos de códigos
-- [ ] Modo de escaneo continuo
-
-### Mejoras Técnicas
-- [ ] Implementación de pruebas de rendimiento
-- [ ] Mejora de la gestión de errores
-- [ ] Optimización para diferentes tamaños de pantalla
-
-### Integración
-- [ ] Mejor soporte para Flutter
-- [ ] Integración con más frameworks
-- [ ] Plugins para editores populares
-
-## 🌟 Objetivos a Largo Plazo (6-12 meses)
-
-### Características Avanzadas
-- [ ] Escaneo 3D de códigos
-- [ ] Reconocimiento de texto (OCR)
-- [ ] Escaneo de documentos
-- [ ] Análisis de calidad de códigos
-
-### Plataforma
-- [ ] Soporte para wearables
-- [ ] Versión web
-- [ ] Soporte para realidad aumentada
-
-### Comunidad
-- [ ] Programa de embajadores
-- [ ] Hackathons y eventos
-- [ ] Programa de mentores
-
-## 🤝 Contribución
-
-¡Tu ayuda es bienvenida! Si quieres contribuir a cualquiera de estos objetivos:
-
-1. Revisa los [issues abiertos](https://github.com/ismoy/BelZSpeedScan/issues)
-2. Consulta la [guía de contribución](CONTRIBUTING.md)
-3. Únete a nuestras [discusiones](https://github.com/ismoy/BelZSpeedScan/discussions)
-
-## 📝 Notas
-
-- Esta hoja de ruta es un documento vivo y puede cambiar según las necesidades de la comunidad
-- Las prioridades pueden ajustarse según el feedback de los usuarios
-- Las fechas son estimaciones y pueden variar
+This document defines the strategic goals to transform **BelZSpeedScan** into a universal scanning solution for all mobile and web platforms, using a single shared codebase with Kotlin Multiplatform (KMP) and Compose Multiplatform (CMP).
 
 ---
 
-¿Tienes ideas o sugerencias? ¡Abre un issue o únete a la discusión! 
+## 🟢 Short Term (1–3 months)
+
+### 🔧 Technical Improvements
+- [ ] Refactor core logic into `commonMain` to enhance portability
+- [ ] Modularize camera renderer and decoder logic
+- [ ] Abstract native interfaces for external bindings (e.g., React Native, Flutter)
+
+### 🖼️ UI/UX via Compose Multiplatform
+- [ ] Support Compose Multiplatform UI (Desktop and Web - beta)
+- [ ] Support automatic dark/light mode switching
+- [ ] Customizable overlay via composable UI props
+
+### 📖 Documentation & Community
+- [ ] Provide full example projects (KMP/CMP) for Android, iOS, Desktop
+- [ ] Improve integration guides step-by-step
+- [ ] Provide ready-to-use template with KMP + JetBrains Compose setup
+
+---
+
+## 🚀 Medium Term (3–6 months)
+
+### 🧩 Cross-Framework Integrations
+- [ ] NPM compatibility via Kotlin/JS for React Native
+- [ ] Create bridge/wrapper for React Native usage with documentation
+- [ ] Experimental Flutter support (via platform channels + host app support)
+
+### 🔍 New Features
+- [ ] Multi-code simultaneous scanning
+- [ ] Continuous scanning mode (loop-based)
+- [ ] Per-platform custom sound feedback
+- [ ] Auto-detection of code type (QR, EAN, etc.)
+
+### 🧪 Testing & Quality
+- [ ] Cross-platform automated testing (Android, iOS, Desktop)
+- [ ] CI/CD setup for publishing multiplatform artifacts (Maven, NPM)
+- [ ] Visual debug mode with bounding boxes and scan overlays
+
+---
+
+## 🌐 Long Term (6–12 months)
+
+### 🌍 Platform Expansion
+- [ ] Web compatibility (via Kotlin/JS + WebAssembly + WebRTC)
+- [ ] Wearable support (Wear OS, watchOS)
+- [ ] SDK/API for third-party integration (Maven/NPM plugins)
+
+### 📦 Distribution & Tooling
+- [ ] Official NPM release as `@belz/scan`
+- [ ] Plugin for JetBrains Marketplace
+- [ ] Compatibility with other Multiplatform libraries via Gradle modules
+
+### 👥 Community & Ecosystem
+- [ ] Simplified contribution workflow (templates, linters, CI helpers)
+- [ ] Community events and hackathons
+- [ ] Establish a small team of core maintainers
+
+### 🧩 Optional Future Additions
+- [ ] External camera support (USB cameras, browser camera APIs)
+- [ ] Integration with OCR libraries (text recognition)
+- [ ] AI-assisted scan correction (blur/shadow detection)
+
+---
+
+## 🤝 How to Contribute
+
+1. Check [issues labeled `help wanted`](https://github.com/ismoy/BelZSpeedScan/issues)
+2. Read the [Contributing Guide](CONTRIBUTING.md)
+3. Join the [GitHub Discussions](https://github.com/ismoy/BelZSpeedScan/discussions)
+
+---
+
+## 📝 Final Notes
+
+- This roadmap is a living document and may evolve based on community feedback and technical progress.
+- Stability and ease of integration in modern mobile frameworks are always the top priority.  
