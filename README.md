@@ -15,6 +15,13 @@
 
 BelZSpeedScan is a lightweight and easy-to-use library for scanning QR codes and barcodes. It supports both Kotlin Multiplatform (KMP) and native Android development, providing a consistent API across platforms. This allows you to use the same scanning logic in your shared KMP code and seamlessly integrate it into your Android application.
 
+## 📂 Project Files
+
+- [📘 README](./README.md)
+- [📄 License (MIT)](./LICENSE)
+- [🧭 Roadmap](./ROADMAP.md)
+- [🤝 Contributing Guide](./CONTRIBUTING.md)
+
 ## 🌟 Features
 
 - 📱 Cross-platform support (Android & iOS)
