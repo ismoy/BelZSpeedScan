@@ -1,29 +1,36 @@
 # [BelZSpeedScan](https://github.com/ismoy/BelZSpeedScan)
 ### A Cross-Platform QR Code and Barcode Scanning Library, using MLKIT for decoding.
 
-BelZSpeedScan is a lightweight and easy-to-use library for scanning QR codes and barcodes. It supports both Kotlin Multiplatform (KMP) and native Android development, providing a consistent API across platforms.  This allows you to use the same scanning logic in your shared KMP code and seamlessly integrate it into your Android application.
-
-
-[![Buy Me a Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20Me%20a%20Coffee&emoji=☕&slug=ismoy&button_colour=FFDD00&font_colour=000000&font_family=Arial&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/Ismoy)
-
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.ismoy/kmpswipe.svg)](https://search.maven.org/artifact/io.github.ismoy/kmpswipe)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg)](https://android-arsenal.com/api?level=21)
-
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-blue.svg?logo=kotlin)](https://kotlinlang.org)
 [![Compose](https://img.shields.io/badge/Compose-1.5.0-green.svg?logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
 [![Platform](https://img.shields.io/badge/Platform-Android%20|%20iOS-orange.svg)](https://kotlinlang.org/docs/multiplatform.html)
-
 [![KMP](https://img.shields.io/badge/KMP-Kotlin%20Multiplatform-7F52FF.svg)](https://kotlinlang.org/docs/multiplatform.html)
 [![Swipe](https://img.shields.io/badge/UI-Swipe%20Gestures-red.svg)](https://github.com/ismoy/kmpswipe)
 [![UX](https://img.shields.io/badge/UX-Haptic%20Feedback-blueviolet.svg)](https://github.com/ismoy/kmpswipe)
-# Demonstrations
+![Issues](https://img.shields.io/github/issues/ismoy/BelZSpeedScan)
+
+BelZSpeedScan is a lightweight and easy-to-use library for scanning QR codes and barcodes. It supports both Kotlin Multiplatform (KMP) and native Android development, providing a consistent API across platforms. This allows you to use the same scanning logic in your shared KMP code and seamlessly integrate it into your Android application.
+
+## 🌟 Features
+
+- 📱 Cross-platform support (Android & iOS)
+- 🚀 High-performance scanning using MLKit
+- 🎨 Customizable UI components
+- 🔒 Security alerts for suspicious codes
+- 🔊 Audio feedback on successful scans
+- 🎯 Multiple barcode formats support
+- ⚡ Real-time scanning
+- 🛠️ Easy integration with KMP projects
+## 📱 Demonstrations
 | Android | iOS |
 |---------|-----|
 | ![Android](https://github.com/ismoy/DemoBelzSpeedScan/blob/main/demoCamera_compressed.gif) | ![Demo](https://github.com/ismoy/BelZSpeedScan/blob/main/images/iosDemo%20(1).gif) |
 
-
-## Installation
+## 🚀 Quick Start
 
 ### Kotlin Multiplatform (KMP)
 
@@ -53,9 +60,50 @@ dependencies {
     // ... other dependencies
 }
 ```
-## How to Use
-The core functionality of BelZSpeedScan is accessed through the App function (or similar entry point in your KMP project).  This function requires a context parameter, which in Android would typically be your MainActivity's context.
-# Use in your KMP
+## 📖 Documentation
+
+For detailed documentation and examples, please visit our [documentation site](https://github.com/ismoy/BelZSpeedScan/wiki).
+
+## 🤝 Contributing
+
+We love your input! We want to make contributing to BelZSpeedScan as easy and transparent as possible, whether it's:
+
+- Reporting a bug
+- Discussing the current state of the code
+- Submitting a fix
+- Proposing new features
+- Becoming a maintainer
+
+Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+## 📋 Roadmap
+
+Check out our [Roadmap](ROADMAP.md) to see what's coming next and how you can help!
+
+## 🐛 Known Issues
+
+Please report any bugs or issues you find in the [issues section](https://github.com/ismoy/BelZSpeedScan/issues).
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Thanks to all our contributors
+- Special thanks to the MLKit team for their amazing work
+- The Kotlin Multiplatform community for their support
+
+## 📞 Contact
+
+- GitHub Issues: [Create an issue](https://github.com/ismoy/BelZSpeedScan/issues)
+- Email: belizairesmoy72@gmail.com
+
+## ⭐ Show your support
+
+Give a ⭐️ if this project helped you!
+
+# Use in your KMP/CMP
 #### App.kt
 ```kotlin
 import io.github.ismoy.belzspeedscan.domain.CodeScanner // Import CodeScanner
