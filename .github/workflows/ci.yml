@@ -33,10 +33,11 @@ jobs:
       run: ./gradlew ktlintCheck
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-artifacts
         path: build/
+        if-no-files-found: error
 
   lint:
     runs-on: ubuntu-latest
@@ -50,8 +51,11 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
     - name: Run ktlint
-      run: ./gradlew ktlintCheck
+      run: ./gradlew ktlintCheck --stacktrace
 
   security:
     runs-on: ubuntu-latest
@@ -65,13 +69,19 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
     - name: Run dependency check
-      run: ./gradlew dependencyCheckAnalyze
+      run: ./gradlew dependencyCheckAnalyze --stacktrace
 
   release:
     needs: [build, lint, security]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v3
     
@@ -82,11 +92,11 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Publish to Maven Central
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Publish to GitHub Packages
       run: ./gradlew publish
       env:
-        OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
-        SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-        SIGNING_SECRET_KEY_RING_FILE: ${{ secrets.SIGNING_SECRET_KEY_RING_FILE }} 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTOR: ${{ github.actor }} 
