@@ -1,5 +1,5 @@
 # [GO TO DEMO](https://github.com/ismoy/DemoBelzSpeedScan)
-### A Cross-Platform QR Code and Barcode Scanning Library, using MLKIT for decoding.
+### A Cross-Platform QR Code and Barcode Scanning Library, using MLKIT for decoding with privacy-focused analytics.
 
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.ismoy/kmpswipe.svg)](https://search.maven.org/artifact/io.github.ismoy/kmpswipe)
@@ -11,6 +11,7 @@
 [![KMP](https://img.shields.io/badge/KMP-Kotlin%20Multiplatform-7F52FF.svg)](https://kotlinlang.org/docs/multiplatform.html)
 [![Swipe](https://img.shields.io/badge/UI-Swipe%20Gestures-red.svg)](https://github.com/ismoy/kmpswipe)
 [![UX](https://img.shields.io/badge/UX-Haptic%20Feedback-blueviolet.svg)](https://github.com/ismoy/kmpswipe)
+[![Analytics](https://img.shields.io/badge/Analytics-Privacy%20Focused-green.svg)](belzspeedscan/analytics_integration_guide.md)
 ![Issues](https://img.shields.io/github/issues/ismoy/BelZSpeedScan)
 
 BelZSpeedScan is a lightweight and easy-to-use library for scanning QR codes and barcodes. It supports both Kotlin Multiplatform (KMP) and native Android development, providing a consistent API across platforms. This allows you to use the same scanning logic in your shared KMP code and seamlessly integrate it into your Android application.
@@ -50,11 +51,12 @@ repositories {
 
 dependencies {
     commonMain {
-        implementation("io.github.ismoy:belzspeedscan:1.0.11") // Replace with the actual version
+        implementation("io.github.ismoy:belzspeedscan:2.0.0") // Replace with the actual version
     }
     // ... other dependencies
 }
 ```
+
 ## Android Native
 For native Android development, include the dependency in your module's build.gradle file:
 ```gradle
@@ -63,13 +65,29 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.ismoy:belzspeedscan:1.0.11") // Replace with the actual version
+    implementation("io.github.ismoy:belzspeedscan:2.0.0") // Replace with the actual version
     // ... other dependencies
 }
 ```
+
 ## 📖 Documentation
 
 For detailed documentation and examples, please visit our [documentation site](https://github.com/ismoy/BelZSpeedScan/wiki).
+
+### Analytics Integration
+
+BelZSpeedScan includes an optional analytics system designed with privacy in mind:
+
+- **Privacy-focused**: No personal data is collected
+- **Opt-in by default**: Analytics is disabled until explicitly enabled
+- **Configurable**: Granular control over what data is collected
+- **Multi-platform**: Works on both Android and iOS
+- **Firebase Integration**: Built-in support for Firebase Analytics
+- **Custom Callbacks**: Support for custom analytics implementations
+
+For detailed analytics integration instructions, see:
+- [Analytics Integration Guide](./belzspeedscan/analytics_integration_guide.md)
+- [Analytics Integration Guide (Español)](./belzspeedscan/analytics_integration_guide_es.md)
 
 ## 🤝 Contributing
 

@@ -1,9 +1,14 @@
-import io.github.ismoy.belzspeedscan.core.determineReason
-import io.github.ismoy.belzspeedscan.core.isValidDataPattern
+import io.github.ismoy.belzspeedscan.config.ScannerConfig
 import io.github.ismoy.belzspeedscan.data.model.CameraPositionDistance
-import io.github.ismoy.belzspeedscan.data.model.SecurityAlertInfo
 import io.github.ismoy.belzspeedscan.domain.CodeScanner
+import io.github.ismoy.belzspeedscan.domain.ScannerEvent
+import io.github.ismoy.belzspeedscan.domain.ScannerEventManager
+import io.github.ismoy.belzspeedscan.state.DefaultScannerStateManager
+import io.github.ismoy.belzspeedscan.state.ScannerState
+import io.github.ismoy.belzspeedscan.utils.LoggerFactory
+import io.github.ismoy.belzspeedscan.utils.camera
 import io.github.ismoy.belzspeedscan.utils.currentTimeMillis
+import io.github.ismoy.belzspeedscan.utils.scanner
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -74,13 +79,9 @@ import platform.darwin.dispatch_queue_create
 @OptIn(ExperimentalForeignApi::class)
 class IOSScanner(
     private var previewView: UIView,
-    private val playSound: Boolean,
-    private val resourceName:String,
-    private val resourceExtension:String,
-    private val delayToNextScan: Long,
-    var onCodeScanned: (String) -> Unit,
-    private val onSecurityAlert: (SecurityAlertInfo) -> Unit,
-    private val onCameraError: ((String) -> Unit)? = null
+    private val config: ScannerConfig,
+    private val eventManager: ScannerEventManager,
+    private val stateManager: DefaultScannerStateManager
 ) : CodeScanner {
 
     private var captureSession: AVCaptureSession? = null
@@ -96,26 +97,21 @@ class IOSScanner(
     private val _scanDistance = MutableStateFlow(CameraPositionDistance.TOO_FAR)
     val scanDistance: StateFlow<CameraPositionDistance> = _scanDistance.asStateFlow()
     private var monitoringTimer: NSTimer? = null
-    private val MALICIOUS_CODE_COOLDOWN = 3000L
     private var lastMaliciousCode: String? = null
     private var lastMaliciousTime: Long = 0
-
-
-    init {
-        if (playSound) {
-            setupAudioPlayer()
-        }
-    }
+    
+    private val logger = LoggerFactory.getLogger()
 
     init {
-        if (playSound) {
+        if (config.playSound) {
             setupAudioPlayer()
         }
+        logger.scanner("IOSScanner initialized with config: ${config.watermark}")
     }
 
     private fun setupAudioPlayer() {
         try {
-            println("Setting up audio player...")
+            logger.scanner("Setting up audio player...")
 
             val audioSession = AVAudioSession.sharedInstance()
             audioSession.setCategory(
@@ -124,43 +120,42 @@ class IOSScanner(
                 error = null
             )
             audioSession.setActive(true, error = null)
-            println("Audio session configured successfully")
+            logger.scanner("Audio session configured successfully")
 
             val bundlePath = NSBundle.mainBundle.bundlePath
-            val resourcePath = "$bundlePath/compose-resources/${resourceName}.${resourceExtension}"
-            println("Searching for file in: $resourcePath")
+            val resourcePath = "$bundlePath/compose-resources/${config.soundResourceName}.${config.soundResourceExtension}"
+            logger.scanner("Searching for file in: $resourcePath")
 
             val soundUrl = NSURL.fileURLWithPath(resourcePath)
-            println("URL of the created file: ${soundUrl.absoluteString}")
+            logger.scanner("URL of the created file: ${soundUrl.absoluteString}")
 
             audioPlayer = AVAudioPlayer(contentsOfURL = soundUrl, error = null)
 
             audioPlayer?.let { player ->
                 if (player.prepareToPlay()) {
-                    println("Player prepared correctly")
+                    logger.scanner("Player prepared correctly")
                     player.volume = 1.0f
                     player.numberOfLoops = 0
 
                     if (player.play()) {
-                        println("Sound check successful")
+                        logger.scanner("Sound check successful")
                         player.stop()
                         player.currentTime = 0.0
                     } else {
-                        println("Error: Sound could not be played in the test ")
+                        logger.error("Audio", "Error: Sound could not be played in the test")
                     }
                 } else {
-                    println("Error: Failed to prepare player")
+                    logger.error("Audio", "Error: Failed to prepare player")
                 }
-            } ?: println("Error: Failed to create audio player")
+            } ?: logger.error("Audio", "Error: Failed to create audio player")
 
         } catch (e: Exception) {
-            println("Error in AudioPlayer setup: ${e.message}")
-            e.printStackTrace()
+            logger.error("Audio", "Error in AudioPlayer setup: ${e.message}", e)
         }
     }
 
     private fun playBeepSound() {
-        if (playSound) {
+        if (config.playSound) {
             try {
                 audioPlayer?.let { player ->
                     if (!player.playing) {
@@ -171,7 +166,7 @@ class IOSScanner(
 
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
             } catch (e: Exception) {
-                println("Error playing sound: ${e.message}")
+                logger.error("Audio", "Error playing sound: ${e.message}", e)
             }
         }
     }
@@ -184,7 +179,10 @@ class IOSScanner(
             didOutputMetadataObjects: List<*>,
             fromConnection: AVCaptureConnection
         ) {
-            if (!isScanning) return
+            if (!isScanning) {
+                logger.scanner("MetadataDelegate: Scanner inactive, skipping processing")
+                return
+            }
 
             dispatch_async(dispatch_get_main_queue()) {
                 val currentTime = currentTimeMillis()
@@ -198,34 +196,17 @@ class IOSScanner(
                     readableObject?.let {
                         val code = it.stringValue ?: return@let
 
-                        if (!isValidDataPattern(code)) {
-                            // Verificar si ya se mostró una alerta recientemente para este código
-                            if (code == lastMaliciousCode &&
-                                (currentTime - lastMaliciousTime) < MALICIOUS_CODE_COOLDOWN) {
-                                return@let
-                            }
-
-                            val reason = determineReason(code)
-                            val alertInfo = SecurityAlertInfo(
-                                message = "¡Advertencia! Se ha detectado un código potencialmente malicioso",
-                                codeValue = code,
-                                reason = reason
-                            )
-                            onSecurityAlert(alertInfo)
-
-                            lastMaliciousCode = code
-                            lastMaliciousTime = currentTime
-                            return@let
-                        }
                         val lastScanTime = lastScannedTimes[code] ?: 0L
                         val timeSinceLastScan = currentTime - lastScanTime
-                        if (timeSinceLastScan > delayToNextScan) {
+                        if (timeSinceLastScan > config.delayToNextScan) {
                             lastScannedCode = code
                             lastScannedTime = currentTime
                             lastScannedTimes[code] = currentTime
                             if (isScanning) {
                                 playBeepSound()
-                                onCodeScanned(code)
+                                eventManager.emitEvent(ScannerEvent.CodeScanned(code))
+                                stateManager.updateState(ScannerState.CodeDetected(code))
+                                logger.scanner("Code scan successfully: $code")
                             }
 
                             val bounds = convertToViewCoordinates(it)
@@ -251,7 +232,7 @@ class IOSScanner(
                 previewLayer?.transformedMetadataObjectForMetadataObject(readableObject) as? AVMetadataMachineReadableCodeObject
             visualCode?.bounds
         } catch (e: Exception) {
-            println("Error convirtiendo coordenadas: ${e.message}")
+            logger.error("Camera", "Error converting to view coordinates: ${e.message}", e)
             null
         }
     }
@@ -305,13 +286,17 @@ class IOSScanner(
 
     private fun setupCamera() {
         try {
+            logger.camera("Setting up camera...")
             val newSession = AVCaptureSession()
             captureSession = newSession
             newSession.sessionPreset = AVCaptureSessionPresetHigh
 
             val device = getCameraDevice()
             if (device == null) {
-                onCameraError?.invoke("No se pudo encontrar un dispositivo de cámara disponible")
+                val errorMessage = "Cant find camera device"
+                logger.error("Camera", errorMessage)
+                eventManager.emitEvent(ScannerEvent.CameraError(errorMessage))
+                stateManager.updateState(ScannerState.Error(errorMessage))
                 return
             }
 
@@ -323,10 +308,12 @@ class IOSScanner(
             if (newSession.canAddInput(input)) {
                 newSession.addInput(input)
             } else {
-                onCameraError?.invoke("No se pudo añadir la entrada a la sesión de cámara")
+                val errorMessage = "Error to add input to session"
+                logger.error("Camera", errorMessage)
+                eventManager.emitEvent(ScannerEvent.CameraError(errorMessage))
+                stateManager.updateState(ScannerState.Error(errorMessage))
                 return
             }
-
 
             setupMetadataOutput(newSession)
 
@@ -345,9 +332,13 @@ class IOSScanner(
             dispatch_async(sessionQueue) {
                 newSession.startRunning()
             }
+            
+            logger.camera("Camera setup completed successfully")
         } catch (e: Exception) {
-            println("IOSScanner: Error en setupCamera: ${e.message}")
-            onCameraError?.invoke("Error al configurar la cámara: ${e.message ?: "Error desconocido"}")
+            val errorMessage = "Error to setup camera: ${e.message ?: "Error desconocido"}"
+            logger.error("Camera", errorMessage, e)
+            eventManager.emitEvent(ScannerEvent.CameraError(errorMessage))
+            stateManager.updateState(ScannerState.Error(errorMessage))
         }
     }
 
@@ -392,7 +383,9 @@ class IOSScanner(
             device.unlockForConfiguration()
         } catch (e: Exception) {
             device.unlockForConfiguration()
-            onCameraError?.invoke("Error al configurar el dispositivo de cámara: ${e.message ?: "Error desconocido"}")
+            val errorMessage = "Error to configure camera: ${e.message ?: "Error unknow"}"
+            logger.error("Camera", errorMessage, e)
+            eventManager.emitEvent(ScannerEvent.CameraError(errorMessage))
         }
     }
 
@@ -414,16 +407,11 @@ class IOSScanner(
         if (_scanDistance.value != newDistance) {
             dispatch_async(dispatch_get_main_queue()) {
                 _scanDistance.value = newDistance
-            }
-        }
-
-
-        if (_scanDistance.value != newDistance) {
-            dispatch_async(dispatch_get_main_queue()) {
-                _scanDistance.value = newDistance
+                eventManager.emitEvent(ScannerEvent.DistanceChanged(newDistance))
             }
         }
     }
+    
     private fun setupMetadataOutput(session: AVCaptureSession) {
         val metadataOutput = AVCaptureMetadataOutput()
         if (session.canAddOutput(metadataOutput)) {
@@ -459,7 +447,11 @@ class IOSScanner(
     }
 
     override fun startScanning() {
+        logger.scanner("Starting scanning")
         isScanning = true
+        stateManager.updateState(ScannerState.StartingCamera)
+        eventManager.emitEvent(ScannerEvent.ScanningStarted)
+        
         if (captureSession == null) {
             setupCamera()
         } else {
@@ -467,21 +459,43 @@ class IOSScanner(
                 this.captureSession?.startRunning()
             }
         }
+        
+        stateManager.updateState(ScannerState.CameraReady)
+        stateManager.updateState(ScannerState.Scanning)
     }
-
 
     override fun stopScanning() {
+        logger.scanner("Stopping scanning - iOS")
         isScanning = false
+        
+        // Stop audio
         audioPlayer?.stop()
         audioPlayer = null
+        
+        // Stop monitoring timer
         monitoringTimer?.invalidate()
         monitoringTimer = null
+        
+        // Stop capture session completely
         dispatch_async(sessionQueue) {
             this.captureSession?.stopRunning()
+            this.captureSession = null
         }
-        clearAllHighlights()
+        
+        // Clear UI elements
+        dispatch_async(dispatch_get_main_queue()) {
+            clearAllHighlights()
+            previewLayer?.removeFromSuperlayer()
+            previewLayer = null
+        }
+        
+        // Clear all references
+        metadataDelegate = null
+        
+        stateManager.updateState(ScannerState.CameraReady)
+        eventManager.emitEvent(ScannerEvent.ScanningStopped)
+        logger.scanner("Scanner stopped completely - camera fully disabled")
     }
-
 
     private fun clearAllHighlights() {
         currentHighlightLayers.values.forEach { it.removeFromSuperlayer() }
@@ -490,6 +504,7 @@ class IOSScanner(
     }
 
     override fun pauseScanning() {
+        logger.scanner("Pausing scanning")
         isScanning = false
         dispatch_async(sessionQueue) {
             this.captureSession?.stopRunning()
@@ -498,9 +513,12 @@ class IOSScanner(
             clearAllHighlights()
             previewLayer?.setHidden(true)
         }
+        stateManager.updateState(ScannerState.Paused)
+        eventManager.emitEvent(ScannerEvent.ScanningPaused)
     }
 
     override fun resumeScanning() {
+        logger.scanner("Resuming scanning")
         dispatch_async(dispatch_get_main_queue()) {
             previewLayer?.setHidden(false)
         }
@@ -510,5 +528,7 @@ class IOSScanner(
                 isScanning = true
             }
         }
+        stateManager.updateState(ScannerState.Scanning)
+        eventManager.emitEvent(ScannerEvent.ScanningResumed)
     }
 }

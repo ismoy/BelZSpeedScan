@@ -1,23 +1,74 @@
 package io.github.ismoy.belzspeedscan
 
 import IOSScanner
-import io.github.ismoy.belzspeedscan.data.model.SecurityAlertInfo
+import io.github.ismoy.belzspeedscan.config.ScannerConfig
 import io.github.ismoy.belzspeedscan.domain.CodeScanner
+import io.github.ismoy.belzspeedscan.domain.ScannerEvent
+import io.github.ismoy.belzspeedscan.domain.ScannerEventManager
+import io.github.ismoy.belzspeedscan.state.DefaultScannerStateManager
 import platform.UIKit.UIView
 
 actual fun createBelSpeedScanCodeScanner(
     context: Any?,
     lifecycleOwner: Any?,
     previewView: Any,
+    config: ScannerConfig,
+    eventManager: ScannerEventManager,
+    stateManager: DefaultScannerStateManager,
+): CodeScanner {
+    return IOSScanner(
+        previewView = previewView as UIView,
+        config = config,
+        eventManager = eventManager,
+        stateManager = stateManager
+    )
+}
+
+@Deprecated(
+    message = "This API has been deprecated in favor of the new BelZSpeedScanner composable and ScannerBuilder pattern. " +
+            "The new API provides better configuration management, event handling, security analysis, and state management.",
+    replaceWith = ReplaceWith(""),
+    level = DeprecationLevel.WARNING
+)
+actual fun createBelSpeedScanCodeScanner(
+    context: Any?,
+    lifecycleOwner: Any?,
+    previewView: Any,
     playSound: Boolean,
-    resourceName:String,
-    resourceExtension:String,
-    delayToNextScan:Long,
-    areaRatioThreshold:Float,
+    resourceName: String,
+    resourceExtension: String,
+    delayToNextScan: Long,
+    areaRatioThreshold: Float,
     onCodeScanned: (String) -> Unit,
-    onSecurityAlert: (SecurityAlertInfo) -> Unit,
     onCameraError: ((String) -> Unit)?
 ): CodeScanner {
-    return IOSScanner(previewView as UIView,playSound,resourceName,resourceExtension,delayToNextScan,
-        onCodeScanned,onSecurityAlert,onCameraError)
+    val config = ScannerConfig(
+        playSound = playSound,
+        soundResourceName = resourceName,
+        soundResourceExtension = resourceExtension,
+        delayToNextScan = delayToNextScan,
+        areaRatioThreshold = areaRatioThreshold
+    )
+
+    val eventManager = ScannerEventManager()
+    val stateManager = DefaultScannerStateManager()
+
+    eventManager.addListener(object : io.github.ismoy.belzspeedscan.domain.ScannerEventListener {
+        override fun onEvent(event: ScannerEvent) {
+            when (event) {
+                is ScannerEvent.CodeScanned -> onCodeScanned(event.code)
+                is ScannerEvent.CameraError -> onCameraError?.invoke(event.error)
+                else -> {}
+            }
+        }
+    })
+
+    return createBelSpeedScanCodeScanner(
+        context = context,
+        lifecycleOwner = lifecycleOwner,
+        previewView = previewView,
+        config = config,
+        eventManager = eventManager,
+        stateManager = stateManager
+    )
 }

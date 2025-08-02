@@ -18,13 +18,12 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun InactiveScanningOverlay(
     onTap: () -> Unit,
-    tapText: String = "Tap to start scanning"
-
+    tapText: String = "Tap to continue"
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.7f))
+            .background(Color.Black.copy(alpha = 0.8f))
             .clickable(onClick = onTap),
         contentAlignment = Alignment.Center
     ) {
@@ -35,10 +34,10 @@ fun InactiveScanningOverlay(
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .background(
-                    color = Color.Black.copy(alpha = 0.7f),
-                    shape = RoundedCornerShape(8.dp)
+                    color = Color.Black.copy(alpha = 0.9f),
+                    shape = RoundedCornerShape(12.dp)
                 )
-                .padding(16.dp)
+                .padding(20.dp)
         )
     }
 }

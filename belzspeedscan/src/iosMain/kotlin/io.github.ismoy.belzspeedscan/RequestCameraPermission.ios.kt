@@ -30,7 +30,8 @@ actual fun RequestCameraPermission(
     customDeniedDialog: (@Composable (onRetry: () -> Unit) -> Unit)?,
     customSettingsDialog: (@Composable (onOpenSettings: () -> Unit) -> Unit)?,
     onPermissionPermanentlyDenied: () -> Unit,
-    onResult: (Boolean) -> Unit
+    onResult: (Boolean) -> Unit,
+    customPermissionHandler: (() -> Unit)?
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var isPermissionDeniedPermanently by remember { mutableStateOf(false) }
@@ -47,7 +48,8 @@ actual fun RequestCameraPermission(
             onDenied = {
                 isPermissionDeniedPermanently = true
                 showDialog = true
-            }
+            },
+            customPermissionHandler = customPermissionHandler
         )
     }
 
@@ -93,15 +95,20 @@ actual fun RequestCameraPermission(
 
 private fun checkAndRequestPermission(
     onGranted: () -> Unit,
-    onDenied: () -> Unit
+    onDenied: () -> Unit,
+    customPermissionHandler: (() -> Unit)?
 ) {
     when (AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)) {
         AVAuthorizationStatusAuthorized -> {
             onGranted()
         }
         AVAuthorizationStatusNotDetermined -> {
-            requestCameraAccess { granted ->
-                if (granted) onGranted() else onDenied()
+            if (customPermissionHandler != null) {
+                customPermissionHandler()
+            } else {
+                requestCameraAccess { granted ->
+                    if (granted) onGranted() else onDenied()
+                }
             }
         }
         else -> {
