@@ -13,5 +13,6 @@ expect fun RequestCameraPermission(
     customDeniedDialog: (@Composable (onRetry: () -> Unit) -> Unit)? = null,
     customSettingsDialog: (@Composable (onOpenSettings: () -> Unit) -> Unit)? = null,
     onPermissionPermanentlyDenied: () -> Unit = {},
-    onResult: (Boolean) -> Unit
+    onResult: (Boolean) -> Unit,
+    customPermissionHandler: (() -> Unit)? = null
 )

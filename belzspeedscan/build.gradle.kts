@@ -63,7 +63,8 @@ kotlin {
                 implementation(libs.barcode.scanning)
                 implementation(libs.startup.runtime)
                 implementation(libs.browser)
-                implementation ("com.google.firebase:firebase-analytics-ktx:21.5.0")
+                implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
             }
         }
         val iosResourcesDir =
@@ -137,7 +138,7 @@ mavenPublishing{
         }
     }
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-    signAllPublications()
+     signAllPublications()
 }
 afterEvaluate {
     publishing {

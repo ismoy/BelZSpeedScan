@@ -30,7 +30,8 @@ actual fun RequestCameraPermission(
     customDeniedDialog: @Composable ((onRetry: () -> Unit) -> Unit)?,
     customSettingsDialog: @Composable ((onOpenSettings: () -> Unit) -> Unit)?,
     onPermissionPermanentlyDenied: () -> Unit,
-    onResult: (Boolean) -> Unit
+    onResult: (Boolean) -> Unit,
+    customPermissionHandler: (() -> Unit)?
 ) {
     val context = LocalContext.current
     var showRationale by remember { mutableStateOf(false) }
@@ -42,6 +43,7 @@ actual fun RequestCameraPermission(
             onPermissionPermanentlyDenied()
         }
     }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -70,7 +72,11 @@ actual fun RequestCameraPermission(
             }
             else -> {
                 if (permissionDeniedCount == 0) {
-                    permissionLauncher.launch(Manifest.permission.CAMERA)
+                    if (customPermissionHandler != null) {
+                        customPermissionHandler()
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
                 }
             }
         }
