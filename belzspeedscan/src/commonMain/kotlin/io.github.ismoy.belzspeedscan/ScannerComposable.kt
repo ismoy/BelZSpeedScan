@@ -73,7 +73,7 @@ fun BelZSpeedScanner(
         scanner?.startScanning()
     }
     
-    CameraPreview(
+    PlatformCameraPreview(
         onPreviewViewReady = { preview ->
             scanner = createScanner(
                 context = context,
@@ -111,7 +111,7 @@ fun SimpleScanner(
 }
 
 @Composable
-expect fun CameraPreview(
+expect fun PlatformCameraPreview(
     onPreviewViewReady: (Any) -> Unit,
     scanner: CodeScanner?,
     modifier: Modifier,

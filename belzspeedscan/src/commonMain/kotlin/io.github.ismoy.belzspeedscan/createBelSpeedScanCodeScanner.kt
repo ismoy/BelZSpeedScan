@@ -1,25 +1,15 @@
 package io.github.ismoy.belzspeedscan
 
-import IOSScanner
 import io.github.ismoy.belzspeedscan.config.ScannerConfig
 import io.github.ismoy.belzspeedscan.domain.CodeScanner
-import io.github.ismoy.belzspeedscan.domain.ScannerEvent
 import io.github.ismoy.belzspeedscan.domain.ScannerEventManager
 import io.github.ismoy.belzspeedscan.state.DefaultScannerStateManager
-import platform.UIKit.UIView
 
-actual fun createBelSpeedScanCodeScanner(
+expect fun createBelSpeedScanCodeScanner(
     context: Any?,
     lifecycleOwner: Any?,
     previewView: Any,
     config: ScannerConfig,
     eventManager: ScannerEventManager,
-    stateManager: DefaultScannerStateManager,
-): CodeScanner {
-    return IOSScanner(
-        previewView = previewView as UIView,
-        config = config,
-        eventManager = eventManager,
-        stateManager = stateManager
-    )
-}
+    stateManager: DefaultScannerStateManager
+): CodeScanner

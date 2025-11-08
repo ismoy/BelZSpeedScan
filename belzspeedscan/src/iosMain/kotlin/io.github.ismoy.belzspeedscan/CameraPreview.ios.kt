@@ -31,7 +31,7 @@ import platform.UIKit.UIView
 
 @Composable
 @OptIn(ExperimentalForeignApi::class)
-actual fun CameraPreview(
+actual fun PlatformCameraPreview(
     onPreviewViewReady: (Any) -> Unit,
     scanner: CodeScanner?,
     modifier: Modifier,
@@ -159,65 +159,4 @@ actual fun CameraPreview(
             }
         }
     }
-}
-
-@Deprecated(
-    message = "This API has been deprecated in favor of the new BelZSpeedScanner composable. " +
-            "The new API provides automatic context handling, better configuration management, and improved UX with inactivity detection.",
-    replaceWith = ReplaceWith(
-        "BelZSpeedScanner(\n" +
-        "    onCodeScanned = { code -> /* your code */ },\n" +
-        ")",
-        imports = ["io.github.ismoy.belzspeedscan.BelZSpeedScanner"]
-    ),
-    level = DeprecationLevel.WARNING
-)
-@Composable
-@OptIn(ExperimentalForeignApi::class)
-actual fun CameraPreview(
-    onPreviewViewReady: (Any) -> Unit,
-    scanner: CodeScanner?,
-    modifier: Modifier,
-    waterMark: String?,
-    tooFarColor: Color?,
-    tooCloseColor: Color?,
-    tooOptimalColor: Color?,
-    tooFarText: String?,
-    tooCloseText: String?,
-    tooOptimalText: String?,
-    titleDialogConfig: String,
-    descriptionDialogConfig: String,
-    btnDialogConfig: String,
-    titleDialogDenied: String,
-    descriptionDialogDenied: String,
-    btnDialogDenied: String,
-    customDeniedDialog: @Composable ((onRetry: () -> Unit) -> Unit)?,
-    customSettingsDialog: @Composable ((onOpenSettings: () -> Unit) -> Unit)?,
-    onPermissionPermanentlyDenied: () -> Unit,
-    customPermissionHandler: (() -> Unit)?
-) {
-    val config = ScannerConfig(
-        watermark = waterMark ?: "BelZSpeedScan",
-        tooFarColor = tooFarColor ?: Color.Red,
-        tooCloseColor = tooCloseColor ?: Color.Red,
-        tooOptimalColor = tooOptimalColor ?: Color.Green,
-        tooFarText = tooFarText ?: "Bring the code closer to the camera\nDistance too far",
-        tooCloseText = tooCloseText ?: "Move the code away from the camera \nToo close",
-        tooOptimalText = tooOptimalText ?: "Perfect distance!\nKeep the code with in the frame",
-        titleDialogConfig = titleDialogConfig,
-        descriptionDialogConfig = descriptionDialogConfig,
-        btnDialogConfig = btnDialogConfig,
-        titleDialogDenied = titleDialogDenied,
-        descriptionDialogDenied = descriptionDialogDenied,
-        btnDialogDenied = btnDialogDenied
-    )
-    
-    CameraPreview(
-        onPreviewViewReady = onPreviewViewReady,
-        scanner = scanner,
-        modifier = modifier,
-        config = config,
-        customOverlay = null,
-        customPermissionDialog = null
-    )
 }

@@ -3,6 +3,7 @@ package io.github.ismoy.belzspeedscan
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import io.github.ismoy.belzspeedscan.config.ScannerConfig
 import io.github.ismoy.belzspeedscan.domain.CodeScanner
 
 @Deprecated(
@@ -17,10 +18,10 @@ import io.github.ismoy.belzspeedscan.domain.CodeScanner
     level = DeprecationLevel.WARNING
 )
 @Composable
-expect fun CameraPreview(
-    onPreviewViewReady: (Any) -> Unit,
-    scanner:CodeScanner?,
-    modifier: Modifier,
+fun CameraPreview(
+    onPreviewViewReady: (Any) -> Unit = {},
+    scanner:CodeScanner? = null,
+    modifier: Modifier = Modifier,
     waterMark:String? = "BelZSpeedScan",
     tooFarColor: Color? = Color.Red,
     tooCloseColor: Color? = Color.Red,
@@ -38,4 +39,29 @@ expect fun CameraPreview(
     customSettingsDialog: (@Composable (onOpenSettings: () -> Unit) -> Unit)? = null,
     onPermissionPermanentlyDenied: () -> Unit = {},
     customPermissionHandler: (() -> Unit)? = null
-)
+) {
+    BelZSpeedScanner(
+        modifier = modifier,
+        config = ScannerConfig(
+            watermark = waterMark ?: "BelZSpeedScan",
+            tooFarColor = tooFarColor ?: Color.Red,
+            tooCloseColor = tooCloseColor ?: Color.Red,
+            tooOptimalColor = tooOptimalColor ?: Color.Green,
+            tooFarText = tooFarText ?: "Bring the code closer to the camera\nDistance too far",
+            tooCloseText = tooCloseText ?: "Move the code away from the camera\nToo close",
+            tooOptimalText = tooOptimalText ?: "Perfect distance!\nKeep the code with in the frame",
+            titleDialogConfig = titleDialogConfig,
+            descriptionDialogConfig = descriptionDialogConfig,
+            btnDialogConfig = btnDialogConfig,
+            titleDialogDenied = titleDialogDenied,
+            descriptionDialogDenied = descriptionDialogDenied,
+            btnDialogDenied = btnDialogDenied
+        ),
+        onCodeScanned = { code ->
+            // Legacy support - no callback needed for deprecated function  
+        },
+        onPermissionPermanentlyDenied = onPermissionPermanentlyDenied,
+        customOverlay = null,
+        customPermissionDialog = null
+    )
+}
