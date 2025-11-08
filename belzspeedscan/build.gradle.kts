@@ -137,7 +137,7 @@ mavenPublishing{
     coordinates(
         groupId = "io.github.ismoy",
         artifactId = "belzspeedscan",
-        version = "1.0.12-al001"
+        version = "1.0.13"
     )
     pom {
         name.set("BelZSpeedScan")
@@ -166,7 +166,7 @@ mavenPublishing{
         }
     }
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-    // signAllPublications()
+     signAllPublications()
 }
 afterEvaluate {
     publishing {
