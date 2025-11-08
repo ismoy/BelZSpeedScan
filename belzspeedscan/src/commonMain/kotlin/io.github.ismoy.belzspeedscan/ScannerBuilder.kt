@@ -54,12 +54,3 @@ fun createScanner(
 ): CodeScanner {
     return ScannerBuilder().apply(block).build(context, lifecycleOwner, previewView)
 }
-
-expect fun createBelSpeedScanCodeScanner(
-    context: Any?,
-    lifecycleOwner: Any?,
-    previewView: Any,
-    config: ScannerConfig,
-    eventManager: ScannerEventManager,
-    stateManager: DefaultScannerStateManager
-): CodeScanner

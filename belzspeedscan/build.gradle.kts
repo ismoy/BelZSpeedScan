@@ -1,7 +1,9 @@
 @file:Suppress("DEPRECATION")
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
 
 import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 
 plugins {
@@ -16,6 +18,7 @@ plugins {
 kotlin {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     targetHierarchy.default()
+    
     androidTarget {
         publishLibraryVariants("release")
         compilations.all {
@@ -25,6 +28,30 @@ kotlin {
         }
     }
 
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "11"
+        }
+    }
+    
+    js(IR) {
+        browser {
+            testTask {
+                enabled = false
+            }
+        }
+        nodejs()
+    }
+    
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser {
+            testTask {
+                enabled = false
+            }
+        }
+    }
+    
     listOf(
         iosX64(),
         iosArm64(),
@@ -33,6 +60,7 @@ kotlin {
         target.binaries.framework {
             baseName = "belzspeedscan"
             isStatic = true
+            freeCompilerArgs += "-Xbinary=bundleId=io.github.ismoy.belzspeedscan"
         }
         target.mavenPublication {}
     }
@@ -63,7 +91,7 @@ kotlin {
                 implementation(libs.barcode.scanning)
                 implementation(libs.startup.runtime)
                 implementation(libs.browser)
-                implementation("androidx.compose.material:material-icons-extended:1.5.4")
+                implementation(libs.androidx.material.icons.extended)
 
             }
         }
@@ -85,7 +113,7 @@ kotlin {
     metadata {
         compilations.all {
             kotlinOptions {
-                freeCompilerArgs += "-Xexport-kdoc"
+                // freeCompilerArgs += "-Xexport-kdoc" // Temporarily disabled - not supported in this Kotlin version
             }
         }
     }
@@ -109,7 +137,7 @@ mavenPublishing{
     coordinates(
         groupId = "io.github.ismoy",
         artifactId = "belzspeedscan",
-        version = "1.0.12"
+        version = "1.0.12-al001"
     )
     pom {
         name.set("BelZSpeedScan")
@@ -138,7 +166,7 @@ mavenPublishing{
         }
     }
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-     signAllPublications()
+    // signAllPublications()
 }
 afterEvaluate {
     publishing {
