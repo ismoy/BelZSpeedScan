@@ -66,7 +66,7 @@ actual fun PlatformCameraPreview(
             delay(2000)
             val timeSinceLastActivity = currentTimeMillis() - lastActivityTime
 
-            if (timeSinceLastActivity > 15000 && !isCameraInactive) {
+            if (timeSinceLastActivity > config.inactivityDelay && !isCameraInactive) {
                 isCameraInactive = true
                 isScanning = false
                 scanner?.stopScanning()
@@ -95,7 +95,6 @@ actual fun PlatformCameraPreview(
         modifier = modifier
             .background(if (isCameraInactive) Color.Black else Color.Transparent)
     ) {
-        // Only show camera preview when not inactive
         if (!isCameraInactive) {
             UIKitView(
                 factory = {

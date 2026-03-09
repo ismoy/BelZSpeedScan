@@ -128,7 +128,7 @@ actual fun PlatformCameraPreview(
                 println("DEBUG: Time since last activity: ${timeSinceLastActivity}ms, isCameraInactive: $isCameraInactive")
             }
 
-            if (timeSinceLastActivity > 15000 && !isCameraInactive) {
+            if (timeSinceLastActivity > config.inactivityDelay && !isCameraInactive) {
                 println("DEBUG: Activating inactive mode!")
                 println("DEBUG: Current flash mode before inactive: $flashMode")
 
