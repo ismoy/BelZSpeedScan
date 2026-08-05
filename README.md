@@ -12,6 +12,15 @@
 
 BelZSpeedScan is a lightweight and easy-to-use library for scanning QR codes and barcodes. It supports both Kotlin Multiplatform (KMP) and native Android development, providing a consistent API across platforms. This allows you to use the same scanning logic in your shared KMP code and seamlessly integrate it into your Android application.
 
+> [!WARNING]
+> **🚨 REPOSITORY DEPRECATED / REPOSITORIO DESCONTINUADO 🚨**
+> 
+> **[EN]** This repository (`BelZSpeedScan`) is no longer maintained. All the scanner library components, new features, and bug fixes have been migrated and unified into a single, much more powerful library. 
+> 👉 **Please migrate to the new repository:** [**ImagePickerKMP**](https://github.com/ismoy/ImagePickerKMP)
+>
+> **[ES]** Este repositorio (`BelZSpeedScan`) ha sido descontinuado y ya no recibirá actualizaciones. Todo el desarrollo, nuevas funciones y correcciones para la librería del escáner se han mudado a una nueva librería unificada y más potente. 
+> 👉 **Por favor, migra al nuevo repositorio:** [**ImagePickerKMP**](https://github.com/ismoy/ImagePickerKMP)
+
 ## 📂 Project Files
 - [📄 License (MIT)](./LICENSE)
 - [🤝 Contributing Guide](./CONTRIBUTING.md)
